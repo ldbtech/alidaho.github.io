@@ -1,10 +1,8 @@
 import React from "react";
-import { Route } from "react-router";
 import Navbar from './components/NavBar/navbar';
 import Intro from './components/Intro/intro';
 import Skills from './components/Skills/skills';
 import Work from './components/Work/work';
-import SlideShow from "./components/Slideshow/slides";
 
 function App() {
   return (

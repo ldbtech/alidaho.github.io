@@ -1,12 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [react()],
   build: {
-    outDir: './build', // Output directly to the project's root directory
-    input: 'src/main.js', // Replace 'src/main.js' with the actual path to your entry JavaScript/TypeScript file.
-
+    outDir: './build',
+    rollupOptions: {
+      input: {
+        app: 'src/main.js', // Your JavaScript/TypeScript entry file
+        index: 'public/index.html', // Your HTML file
+      },
+    },
   },
 });
