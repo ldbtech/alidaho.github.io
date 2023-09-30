@@ -16,13 +16,13 @@ const WorkCarte = () => {
                     <div className="buttonContainer">
                         <button className="desktopMenuButton">
                             <div className="buttonContents">
-                                <img src={Contact} alt="desktop Image Menu Button" className="deskopMenuButtonImage" />
+                                <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
                                 <span className="contactMe">Github</span>
                             </div>
                         </button>
                         <button className="desktopMenuButton">
                             <div className="buttonContents">
-                                <img src={Contact} alt="desktop Image Menu Button" className="deskopMenuButtonImage" />
+                                <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
                                 <span className="contactMe">Try it yourself</span>
                             </div>
                         </button>
@@ -30,7 +30,6 @@ const WorkCarte = () => {
 
                 </div>
             </div>
-
         </div>
     )
 }

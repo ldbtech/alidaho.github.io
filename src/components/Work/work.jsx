@@ -12,6 +12,7 @@ const Work = () => {
                 <WorkCarte />
                 <WorkCarte />
             </div>
+            <button className="workBtn">See More</button>
         </section>
     )
 }

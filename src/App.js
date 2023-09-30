@@ -12,7 +12,6 @@ function App() {
         <Intro />
         <Skills />
         <Work />
-        <WorkCarte />
       </header>
     </div>
   );
