@@ -1,25 +1,25 @@
 import React from "react";
 import Contact from '../../assets/contact.png';
 import './workcarte.css';
-const WorkCarte = () => {
+const WorkCarte = ({ project }) => {
     return (
         <div className="workCartes">
-            <div className="workCarte">
-                <h2>Cluster Images</h2>
-                <img src="" alt="Worl Image" className="worksImg" />
-                <div className="workTextBtn">
-                    <p>I've delved into intriguing machine learning projects. My work includes an emotion
-                        recognizer from faces, another from spoken words, an English to French translator,
-                        and a tool that checks
-                        receipt authenticity through text analysis. Explore more details by clicking below.
+            <div id="workCarte">
+                <h2 className="workTitle">{project.title}</h2>
+                <img src={project.picture} alt="Work" className="worksImg" />
+                <div className="workDesc">
+                    <p>{project.description}
                     </p>
                     <div className="buttonContainer">
                         <button className="desktopMenuButton">
                             <div className="buttonContents">
-                                <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
-                                <span className="contactMe">Github</span>
+                                <a href={project.GitHub} target="_blank" rel="noopener noreferrer">
+                                    <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
+                                    <span className="contactMe">Github</span>
+                                </a>
                             </div>
                         </button>
+
                         <button className="desktopMenuButton">
                             <div className="buttonContents">
                                 <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
