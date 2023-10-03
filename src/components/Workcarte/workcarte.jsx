@@ -1,5 +1,7 @@
 import React from "react";
-import Contact from '../../assets/contact.png';
+import GitHub from '../../assets/github.png';
+import TestIt from '../../assets/testit.png';
+
 import './workcarte.css';
 const WorkCarte = ({ project }) => {
     return (
@@ -11,18 +13,18 @@ const WorkCarte = ({ project }) => {
                     <p>{project.description}
                     </p>
                     <div className="buttonContainer">
-                        <button className="desktopMenuButton">
+                        <button className="buttonWorkCarte">
                             <div className="buttonContents">
                                 <a href={project.GitHub} target="_blank" rel="noopener noreferrer">
-                                    <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
+                                    <img src={GitHub} alt="desktop Menu" className="deskopMenuButtonImage" />
                                     <span className="contactMe">Github</span>
                                 </a>
                             </div>
                         </button>
 
-                        <button className="desktopMenuButton">
+                        <button className="buttonWorkCarte">
                             <div className="buttonContents">
-                                <img src={Contact} alt="desktop Menu" className="deskopMenuButtonImage" />
+                                <img src={TestIt} alt="desktop Menu" className="deskopMenuButtonImage" />
                                 <span className="contactMe">Try it yourself</span>
                             </div>
                         </button>

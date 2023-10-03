@@ -42,12 +42,46 @@
     letter-spacing: 1px;
 }
 
-#btn {
+.buttonWorkCarte:hover {
+    background-color: #0056b3;
+}
+
+.buttonContents a {
+    color: black;
+    text-decoration: none;
+
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.LinkedIn {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.buttonWorkCarte {
+    color: black;
     background-color: white;
-    margin: 1rem 0;
-    padding: 0.75rem 1.5rem;
-    border: none;
     border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+
+    object-fit: cover;
+    height: 1.5rem;
+    /* Adjust the size of the icon as needed */
+    width: 1.5rem;
+    /* Adjust the size of the icon as needed */
+    margin-right: 0.5rem;
+    /* Add some spacing between the icon and text */
 }
 
 .btnImage {

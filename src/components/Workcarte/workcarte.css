@@ -63,7 +63,21 @@
     margin-top: 20px;
 }
 
-.desktopMenuButton:hover {
+.buttonWorkCarte {
+    color: black;
+    background-color: white;
+    border-radius: 2rem;
+    width: 10rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.buttonWorkCarte:hover {
     background-color: #0056b3;
 }
 
