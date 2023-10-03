@@ -44,8 +44,9 @@
     /* Ensure description stretches to the same height as the card */
 }
 
-
-
+.buttonContents a {
+    color: black;
+}
 
 .worksImg {
     align-items: center;

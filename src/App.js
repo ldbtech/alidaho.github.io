@@ -3,7 +3,8 @@ import Navbar from './components/NavBar/navbar';
 import Intro from './components/Intro/intro';
 import Skills from './components/Skills/skills';
 import Work from './components/Work/work';
-import WorkCarte from './components/Workcarte/workcarte';
+import Contact from './components/Footer/Contact/contact';
+import Footer from './components/Footer/footer';
 function App() {
   return (
     <div className="App">
@@ -12,6 +13,8 @@ function App() {
         <Intro />
         <Skills />
         <Work />
+        <Contact />
+        <Footer />
       </header>
     </div>
   );
