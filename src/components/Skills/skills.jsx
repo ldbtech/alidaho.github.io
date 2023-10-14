@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import './skills.css';
 import { database } from "../../Firebase";
 import { ref, onValue } from "firebase/database";
-import { TailSpin } from "react-loader-spinner";
 
 const Skills = () => {
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,7 +22,6 @@ const Skills = () => {
                     } else {
                         setData([]);
                     }
-                    setLoading(false); // Set loading to false after fetching data
 
                 });
 
@@ -34,7 +31,6 @@ const Skills = () => {
                 };
             } catch (error) {
                 console.error(`Error Fetching data ${error}`);
-                setLoading(false); // Set loading to false in case of an error
             }
         };
 

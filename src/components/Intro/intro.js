@@ -1,6 +1,8 @@
 import React from "react";
 import './intro.css';
-import LinkedIn from '../../assets/LinkedIn.png';
+import Working from '../../assets/working.png';
+import { Link } from "react-router-dom"; // Import Link from React Router
+
 
 const Intro = () => {
     return (
@@ -11,10 +13,10 @@ const Intro = () => {
                 <p className="introParagraph">I am a skilled Software Engineer/AI engineer who is passionate  <br /> about contributing to solve a real world problems.</p>
                 <button className="buttonWorkCarte">
                     <div className="buttonContents">
-                        <a href="https://www.linkedin.com/in/alidaho/" target="_blank" rel="noopener noreferrer">
-                            <img src={LinkedIn} alt="desktop Menu" className="deskopMenuButtonImage" />
-                            <span className="LinkedIn">LinkedIn</span>
-                        </a>
+                        <Link to="/workingon/">
+                            <img src={Working} alt="desktop Menu" className="deskopMenuButtonImage" />
+                            <span className="LinkedIn">Working on</span>
+                        </Link>
                     </div>
                 </button>
             </div>

@@ -90,7 +90,7 @@
 }
 
 .skillTag:hover {
-    background-color: gray;
+    background-color: color(display-p3 0.443 0.69 0.985);
     /* Change background color on hover */
     color: #fff;
     /* Change text color on hover */

@@ -1,22 +1,48 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/NavBar/navbar';
 import Intro from './components/Intro/intro';
 import Skills from './components/Skills/skills';
 import Work from './components/Work/work';
 import Contact from './components/Footer/Contact/contact';
 import Footer from './components/Footer/footer';
+import WorkDetail from './components/WorkDetails/workDetails';
+import WorkingOn from './components/WorkingOn/workingon';
+import { DataProvider, DataCurrentWork } from './DataContext';
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <Navbar />
-        <Intro />
-        <Skills />
-        <Work />
-        <Contact />
-        <Footer />
-      </header>
-    </div>
+    <DataProvider>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <Navbar />
+          </header>
+          <main>
+            <Routes>
+              <Route path="/" element={<Intro />} />
+            </Routes>
+            <Routes>
+              <Route path="/" element={<Skills />} exact />
+
+            </Routes>
+            <Routes>
+              <Route path="/" element={<Work />} exact />
+
+            </Routes>
+          </main>
+          <Routes>
+            <Route path="/work/:id" element={<WorkDetail />} exact /> {/* New route for detailed work post */}
+          </Routes>
+          <Routes>
+            <Route path="/workingon" element={<WorkingOn />} exact /> {/* New route for detailed work post */}
+          </Routes>
+
+          <Contact />
+          <Footer />
+        </div>
+      </Router>
+    </DataProvider>
   );
 }
 

@@ -1,13 +1,16 @@
 import React from "react";
 import GitHub from '../../assets/github.png';
 import TestIt from '../../assets/testit.png';
+import { Link } from "react-router-dom"; // Import Link from React Router
 
 import './workcarte.css';
 const WorkCarte = ({ project }) => {
     return (
         <div className="workCartes">
             <div id="workCarte">
-                <h2 className="workTitle">{project.title}</h2>
+                <h2 className="workTitle">
+                    <Link to={`/work/${project.id}`}>{project.title}</Link>
+                </h2>
                 <img src={project.picture} alt="Work" className="worksImg" />
                 <div className="workDesc">
                     <p>{project.description}
