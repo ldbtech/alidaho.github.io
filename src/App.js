@@ -6,9 +6,8 @@ import Skills from './components/Skills/skills';
 import Work from './components/Work/work';
 import Contact from './components/Footer/Contact/contact';
 import Footer from './components/Footer/footer';
-import WorkDetail from './components/WorkDetails/workDetails';
 import WorkingOn from './components/WorkingOn/workingon';
-import { DataProvider, DataCurrentWork } from './DataContext';
+import { DataProvider } from './DataContext';
 
 function App() {
   return (
@@ -31,9 +30,6 @@ function App() {
 
             </Routes>
           </main>
-          <Routes>
-            <Route path="/work/:id" element={<WorkDetail />} exact /> {/* New route for detailed work post */}
-          </Routes>
           <Routes>
             <Route path="/workingon" element={<WorkingOn />} exact /> {/* New route for detailed work post */}
           </Routes>

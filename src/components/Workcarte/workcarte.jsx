@@ -9,7 +9,7 @@ const WorkCarte = ({ project }) => {
         <div className="workCartes">
             <div id="workCarte">
                 <h2 className="workTitle">
-                    <Link to={`/work/${project.id}`}>{project.title}</Link>
+                    {project.title}
                 </h2>
                 <img src={project.picture} alt="Work" className="worksImg" />
                 <div className="workDesc">
