@@ -49,9 +49,23 @@ function WorkingOn() {
         fetchData();
     }, []); // Empty dependencies array to run once
 
-    const projectSteps = data.steps.map((tasks, taskKey) => (
-        <li key={taskKey}>Step {taskKey + 1}: {tasks}</li>
-    ));
+    let steps = null;
+
+    if (typeof data.steps === 'object' && Object.keys(data.steps).length > 0) {
+        steps = (
+            <ul className='steps-list'>
+                {Object.keys(data.steps).map((resKey) => (
+                    <li key={resKey}>
+                        {resKey}: {data.steps[resKey]}
+                    </li>
+                ))}
+            </ul>
+        );
+    } else {
+        // Handle the case when data.steps is empty or not an object
+        steps = <p>No Steps Taken yet!</p>;
+    }
+
 
     let resource = null; // Initialize as null
 
@@ -107,12 +121,7 @@ function WorkingOn() {
                 </div>
                 <div className="project-steps">
                     <h2 className="steps-title">Steps Taken</h2>
-                    <ul className='steps-list'>
-                        {projectSteps}
-                    </ul>
-                    <p className="current-step">
-                        Currently at Step 2
-                    </p>
+                    {steps}
                 </div>
                 <div className="articles-read">
                     <h2 className="articles-read-title">Articles Read</h2>
