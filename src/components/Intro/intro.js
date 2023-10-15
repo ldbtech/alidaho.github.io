@@ -2,7 +2,7 @@ import React from "react";
 import './intro.css';
 import Working from '../../assets/working.png';
 import { Link } from "react-router-dom"; // Import Link from React Router
-
+import Profile from "../../assets/profile_.png";
 
 const Intro = () => {
     return (
@@ -20,7 +20,7 @@ const Intro = () => {
                     </div>
                 </button>
             </div>
-            <img src="" alt="Profile" className="bg" />
+            <img src={Profile} alt="Profile" className="bg" />
         </section>
     );
 }

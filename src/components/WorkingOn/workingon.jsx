@@ -3,9 +3,8 @@ import './workingon.css'; // Import your CSS file
 import { FaGithub, FaHeart } from 'react-icons/fa'; // Import icons from react-icons library
 import { ref, onValue } from "firebase/database";
 import { database } from "../../Firebase";
-
+import Profile from '../../assets/profile.jpg';
 function WorkingOn() {
-
     const [data, setData] = useState({
         GitHub: '',
         StartDate: '',
@@ -15,6 +14,7 @@ function WorkingOn() {
         progress: 0,
         steps: [],
         title: '',
+        resources: [],
     });
 
     // Fetch data from Firebase and store it in the state
@@ -37,6 +37,7 @@ function WorkingOn() {
                             progress: 0,
                             steps: [],
                             title: '',
+                            resources: []
                         });
                     }
                 });
@@ -47,14 +48,37 @@ function WorkingOn() {
 
         fetchData();
     }, []); // Empty dependencies array to run once
+
+    const projectSteps = data.steps.map((tasks, taskKey) => (
+        <li key={taskKey}>Step {taskKey + 1}: {tasks}</li>
+    ));
+
+    let resource = null; // Initialize as null
+
+    if (typeof data.resources === 'object' && Object.keys(data.resources).length > 0) {
+        resource = (
+            <ul className='res-links'>
+                {Object.keys(data.resources).map((resKey) => (
+                    <li key={resKey}>
+                        <a href={data.resources[resKey]} className="" target="_blank"
+                            rel="noopener noreferrer">{resKey}</a>
+                    </li>
+                ))}
+            </ul>
+        );
+    } else {
+        // Handle the case when data.resources is empty or not an object
+        resource = <p>No Resources</p>;
+    }
+
+
     return (
         <div className="project-progress-container">
-
             <header className="article-header">
                 <h1 className="article-title">{data.title}</h1>
                 <div className="author-info">
                     <div className="author-avatar">
-                        <img src="your-avatar.jpg" alt="Your Name" />
+                        <img src={Profile} alt="Your Name" />
                     </div>
                     <div className="author-details">
                         <p className="author-name">Ali Daho</p>
@@ -68,7 +92,6 @@ function WorkingOn() {
                         <span className="like-count"><FaHeart className="link-icon" />{data.likes}</span>
                     </div>
                     <div className="progress-section">
-                        {/** overallProgress variable has to be changing everytime i finished something.  */}
                         <div id="progress-bar">
                             <div id="progress" style={{ width: `${data.progress}%` }}>
                                 {data.progress}%
@@ -84,11 +107,8 @@ function WorkingOn() {
                 </div>
                 <div className="project-steps">
                     <h2 className="steps-title">Steps Taken</h2>
-                    <ul className="steps-list">
-                        <li>Step 1: Description of step 1.</li>
-                        <li>Step 2: Description of step 2.</li>
-                        <li>Step 3: Description of step 3.</li>
-                        {/* Add more steps as needed */}
+                    <ul className='steps-list'>
+                        {projectSteps}
                     </ul>
                     <p className="current-step">
                         Currently at Step 2
@@ -96,15 +116,9 @@ function WorkingOn() {
                 </div>
                 <div className="articles-read">
                     <h2 className="articles-read-title">Articles Read</h2>
-                    <ul className="articles-read-list">
-                        <li>Article 1: Description of article 1.</li>
-                        <li>Article 2: Description of article 2.</li>
-                        <li>Article 3: Description of article 3.</li>
-                        {/* Add more articles as needed */}
-                    </ul>
+                    {resource}
                 </div>
             </div>
-            {/* Links to external websites */}
             <div className="links-container">
                 <a
                     href={data.GitHub}
@@ -115,7 +129,6 @@ function WorkingOn() {
                     <FaGithub className="link-icon" /> Github
                 </a>
             </div>
-
         </div>
     );
 }
