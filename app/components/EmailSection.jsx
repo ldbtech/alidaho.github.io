@@ -1,41 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import GithubIcon from "../../public/github-icon.svg";
 import LinkedinIcon from "../../public/linkedin-icon.svg";
 import Link from "next/link";
 import Image from "next/image";
+import emailjs from '@emailjs/browser';
 
 const EmailSection = () => {
     const [emailSubmitted, setEmailSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+    const formRef = useRef();
+
+    useEffect(() => {
+        // Initialize EmailJS with your public key
+        emailjs.init("6iPziy_x_pJRzimF_");
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = {
-            email: e.target.email.value,
-            subject: e.target.subject.value,
-            message: e.target.message.value,
-        };
-        const JSONdata = JSON.stringify(data);
-        const endpoint = "/api/send";
+        setIsLoading(true);
+        setError("");
 
-        // Form the request for sending data to the server.
-        const options = {
-            // The method is POST because we are sending data.
-            method: "POST",
-            // Tell the server we're sending JSON.
-            headers: {
-                "Content-Type": "application/json",
-            },
-            // Body of the request is the JSON data we created above.
-            body: JSONdata,
-        };
+        try {
+            const result = await emailjs.sendForm(
+                "service_np3ln8m",
+                "template_5bj5bdr",
+                formRef.current,
+                "6iPziy_x_pJRzimF_"
+            );
 
-        const response = await fetch(endpoint, options);
-        const resData = await response.json();
-
-        if (response.status === 200) {
-            console.log("Message sent.");
-            setEmailSubmitted(true);
+            if (result.text === 'OK') {
+                setEmailSubmitted(true);
+                e.target.reset();
+            } else {
+                throw new Error('Failed to send email');
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+            setError("Failed to send message. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -50,27 +55,44 @@ const EmailSection = () => {
                     Let&apos;s Connect
                 </h5>
                 <p className="text-[#ADB7BE] mb-4 max-w-md">
-                    {" "}
                     I&apos;m currently looking for new opportunities, my inbox is always
                     open. Whether you have a question or just want to say hi, I&apos;ll
                     try my best to get back to you!
                 </p>
                 <div className="socials flex flex-row gap-2">
-                    <Link href="https://github.com/ldbtech">
+                    <Link href="https://github.com/ldbtech" target="_blank" rel="noopener noreferrer">
                         <Image src={GithubIcon} alt="Github Icon" />
                     </Link>
-                    <Link href="https://www.linkedin.com/in/alidaho/">
+                    <Link href="https://www.linkedin.com/in/alidaho/" target="_blank" rel="noopener noreferrer">
                         <Image src={LinkedinIcon} alt="Linkedin Icon" />
                     </Link>
                 </div>
             </div>
             <div>
                 {emailSubmitted ? (
-                    <p className="text-green-500 text-sm mt-2">
-                        Email sent successfully!
-                    </p>
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                        <p className="text-green-500 text-center">
+                            Thank you for your message! I&apos;ll get back to you soon.
+                        </p>
+                    </div>
                 ) : (
-                    <form className="flex flex-col" onSubmit={handleSubmit}>
+                    <form ref={formRef} className="flex flex-col" onSubmit={handleSubmit}>
+                        <div className="mb-6">
+                            <label
+                                htmlFor="name"
+                                className="text-white block mb-2 text-sm font-medium"
+                            >
+                                Your name
+                            </label>
+                            <input
+                                name="name"
+                                type="text"
+                                id="name"
+                                required
+                                className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
+                                placeholder="John Doe"
+                            />
+                        </div>
                         <div className="mb-6">
                             <label
                                 htmlFor="email"
@@ -113,15 +135,25 @@ const EmailSection = () => {
                             <textarea
                                 name="message"
                                 id="message"
+                                required
                                 className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
                                 placeholder="Let's talk about..."
+                                rows="4"
                             />
                         </div>
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                <p className="text-red-500 text-sm">{error}</p>
+                            </div>
+                        )}
                         <button
                             type="submit"
-                            className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-2.5 px-5 rounded-lg w-full"
+                            disabled={isLoading}
+                            className={`bg-primary-500 hover:bg-primary-600 text-white font-medium py-2.5 px-5 rounded-lg w-full transition-all duration-300 ${
+                                isLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         >
-                            Send Message
+                            {isLoading ? "Sending..." : "Send Message"}
                         </button>
                     </form>
                 )}

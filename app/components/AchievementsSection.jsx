@@ -50,6 +50,7 @@ const AchievementsSection = () => {
                                             tensions: 140 * (index + 1),
                                         };
                                     }}
+                                    key={`number-${index}`}
                                 />
                                 {achievement.postfix}
                             </h2>
