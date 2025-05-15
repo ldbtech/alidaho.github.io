@@ -14,7 +14,7 @@ const EmailSection = () => {
 
     useEffect(() => {
         // Initialize EmailJS with your public key
-        emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY);
+        emailjs.init("6iPziy_x_pJRzimF_");
     }, []);
 
     const handleSubmit = async (e) => {
@@ -24,10 +24,10 @@ const EmailSection = () => {
 
         try {
             const result = await emailjs.sendForm(
-                process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-                process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+                "service_xxxxx", // Replace with your service ID
+                "template_xxxxx", // Replace with your template ID
                 formRef.current,
-                process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+                "6iPziy_x_pJRzimF_"
             );
 
             if (result.text === 'OK') {

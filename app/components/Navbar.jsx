@@ -70,7 +70,7 @@ const Navbar = () => {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5 }}
-            className={`fixed mx-auto top-0 left-0 right-0 z-10 transition-all duration-300 ${
+            className={`fixed mx-auto top-0 left-0 right-0 z-50 transition-all duration-300 ${
                 scrolled 
                     ? "bg-[#121212] bg-opacity-95 backdrop-blur-sm border-b border-[#33353F]" 
                     : "bg-transparent"
@@ -82,21 +82,23 @@ const Navbar = () => {
                     className="flex items-center"
                 >
                     {profile?.logo && !imageError ? (
-                        <div className="relative w-12 h-12">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition-colors duration-300">
                             <Image
                                 src={profile.logo}
                                 alt="Logo"
                                 fill
-                                className="object-contain"
+                                className="object-cover"
                                 priority
                                 onError={handleImageError}
                                 unoptimized
                             />
                         </div>
                     ) : (
-                        <span className="text-2xl md:text-5xl text-white font-semibold hover:text-primary-400 transition-colors duration-300">
-                            AD
-                        </span>
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
+                            <span className="text-xl font-bold text-white">
+                                AD
+                            </span>
+                        </div>
                     )}
                 </Link>
                 <div className="mobile-menu block md:hidden">
