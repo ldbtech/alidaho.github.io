@@ -174,4 +174,46 @@ export const saveAbout = async (data) => {
   }
 };
 
+// Visitor tracking functions
+export const incrementVisitorCount = async () => {
+  try {
+    const visitorRef = ref(database, 'visitors');
+    const snapshot = await get(visitorRef);
+    const currentCount = snapshot.val()?.count || 0;
+    
+    await set(visitorRef, {
+      count: currentCount + 1,
+      lastUpdated: new Date().toISOString()
+    });
+    
+    return currentCount + 1;
+  } catch (error) {
+    console.error("Error incrementing visitor count:", error);
+    return null;
+  }
+};
+
+export const getVisitorCount = async () => {
+  try {
+    const visitorRef = ref(database, 'visitors');
+    const snapshot = await get(visitorRef);
+    return snapshot.val()?.count || 0;
+  } catch (error) {
+    console.error("Error getting visitor count:", error);
+    return 0;
+  }
+};
+
+export const getProjectCount = async () => {
+  try {
+    const projectsRef = ref(database, 'projects');
+    const snapshot = await get(projectsRef);
+    const projects = snapshot.val();
+    return projects ? Object.keys(projects).length : 0;
+  } catch (error) {
+    console.error("Error getting project count:", error);
+    return 0;
+  }
+};
+
 export default database; 
