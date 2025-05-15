@@ -21,7 +21,7 @@ const AchievementsSection = () => {
         {
             id: 2,
             prefix: "~",
-            metric: "Users",
+            metric: "Visitors Count",
             value: "0",
         },
         {
