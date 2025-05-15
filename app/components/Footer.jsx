@@ -144,14 +144,7 @@ const Footer = () => {
                         <p className="text-gray-400 text-sm">
                             © 2025 Ali Daho. All rights reserved.
                         </p>
-                        <div className="flex space-x-6">
-                            <Link href="#privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                                Privacy Policy
-                            </Link>
-                            <Link href="#terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-                                Terms of Service
-                            </Link>
-                        </div>
+               
                     </div>
                 </div>
             </div>
