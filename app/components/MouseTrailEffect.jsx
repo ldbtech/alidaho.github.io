@@ -4,10 +4,11 @@ import React, { useEffect, useState, useRef } from 'react';
 const MouseTrailEffect = () => {
     const [columns, setColumns] = useState([]);
     const containerRef = useRef(null);
-    const columnWidth = 20; // Width of each column
-    const speed = 50; // Speed of falling characters
+    const columnWidth = 20;
+    const lastScrollY = useRef(0);
+    const lastScrollTime = useRef(Date.now());
+    const [scrollSpeed, setScrollSpeed] = useState(0);
 
-    // Generate random binary string
     const generateBinaryString = (length) => {
         return Array.from({ length }, () => Math.random() > 0.5 ? '1' : '0').join('');
     };
@@ -24,41 +25,48 @@ const MouseTrailEffect = () => {
                 id: i,
                 x: i * columnWidth,
                 text: generateBinaryString(Math.floor(Math.random() * 20) + 10),
-                startDelay: Math.random() * 2000, // Random start delay
-                speed: Math.random() * 30 + 20, // Random speed between 20-50
-                opacity: 0.5 // Increased base opacity
+                startDelay: Math.random() * 2000,
+                baseSpeed: Math.random() * 30 + 20, // Base speed for each column
+                opacity: 0.5
             }));
             
             setColumns(newColumns);
         };
 
-        const handleMouseMove = (e) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
+        const handleScroll = () => {
+            const currentTime = Date.now();
+            const currentScrollY = window.scrollY;
+            const timeDiff = currentTime - lastScrollTime.current;
+            const scrollDiff = Math.abs(currentScrollY - lastScrollY.current);
             
-            setColumns(prev => prev.map(column => {
-                const distanceX = Math.abs(column.x - mouseX);
-                const distanceY = Math.abs(mouseY - (column.startDelay % window.innerHeight));
-                
-                // Calculate if column should be more visible based on distance from cursor
-                const shouldBeVisible = distanceX <= columnWidth * 3;
-                
-                return {
-                    ...column,
-                    opacity: shouldBeVisible ? 0.9 : 0.5 // Increased highlight opacity
-                };
-            }));
+            // Calculate scroll speed (pixels per millisecond)
+            const speed = scrollDiff / timeDiff;
+            
+            // Update scroll speed state with some smoothing
+            setScrollSpeed(prev => prev * 0.7 + speed * 0.3);
+            
+            // Update last scroll position and time
+            lastScrollY.current = currentScrollY;
+            lastScrollTime.current = currentTime;
         };
 
         initializeColumns();
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('scroll', handleScroll);
         window.addEventListener('resize', initializeColumns);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('resize', initializeColumns);
         };
     }, []);
+
+    // Update column speeds based on scroll speed
+    useEffect(() => {
+        setColumns(prev => prev.map(column => ({
+            ...column,
+            currentSpeed: column.baseSpeed * (1 + scrollSpeed * 100) // Scale the speed based on scroll velocity
+        })));
+    }, [scrollSpeed]);
 
     return (
         <div 
@@ -72,14 +80,14 @@ const MouseTrailEffect = () => {
             {columns.map((column) => (
                 <div
                     key={column.id}
-                    className="absolute transition-opacity duration-300"
+                    className="absolute transition-all duration-300"
                     style={{
                         left: column.x,
                         top: 0,
                         width: columnWidth,
                         height: '100vh',
                         opacity: column.opacity,
-                        animation: `matrixRain ${column.speed / 10}s linear infinite`,
+                        animation: `matrixRain ${column.currentSpeed ? column.currentSpeed / 10 : column.baseSpeed / 10}s linear infinite`,
                         animationDelay: `${column.startDelay}ms`
                     }}
                 >
@@ -89,7 +97,7 @@ const MouseTrailEffect = () => {
                                 key={i}
                                 className="transition-colors duration-300"
                                 style={{
-                                    opacity: 0.9 - (i * 0.05), // Increased base opacity
+                                    opacity: 0.9 - (i * 0.05),
                                     color: i === 0 ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 255, 0, 0.8)'
                                 }}
                             >
