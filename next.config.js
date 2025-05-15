@@ -1,13 +1,16 @@
 // next.config.js
 
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig = {
-    output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+    output: 'export',
     images: {
         unoptimized: true,
     },
-    basePath: process.env.NODE_ENV === 'production' ? '/alidaho.github.io' : '',
-    assetPrefix: process.env.NODE_ENV === 'production' ? '/alidaho.github.io/' : '',
+    basePath: isProd ? '/alidaho.github.io' : '',
+    assetPrefix: isProd ? '/alidaho.github.io/' : '',
+    trailingSlash: true,
 };
 
 module.exports = nextConfig;

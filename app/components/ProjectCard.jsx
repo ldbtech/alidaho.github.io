@@ -1,37 +1,63 @@
-import React from "react";
-import { CodeBracketIcon, EyeIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+"use client";
 
-const ProjectCard = ({ imgUrl, title, description, gitUrl, previewUrl }) => {
-    return (
-        <div>
-            <div className="h-52 md:h-72 rounded-t-xl relative group overflow-hidden">
-                <img
-                    src={imgUrl}
-                    alt={`${title} project screenshot`}
-                    className="object-cover w-full h-full"
-                />
-                <div className="overlay items-center justify-center absolute top-0 left-0 w-full h-full bg-[#181818] bg-opacity-0 hidden group-hover:flex group-hover:bg-opacity-80 transition-all duration-500 ">
-                    <Link
-                        href={gitUrl}
-                        className="h-14 w-14 mr-2 border-2 relative rounded-full border-[#ADB7BE] hover:border-white group/link"
-                    >
-                        <CodeBracketIcon className="h-10 w-10 text-[#ADB7BE] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  cursor-pointer group-hover/link:text-white" />
-                    </Link>
-                    <Link
-                        href={previewUrl}
-                        className="h-14 w-14 border-2 relative rounded-full border-[#ADB7BE] hover:border-white group/link"
-                    >
-                        <EyeIcon className="h-10 w-10 text-[#ADB7BE] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  cursor-pointer group-hover/link:text-white" />
-                    </Link>
-                </div>
-            </div>
-            <div className="text-white rounded-b-xl mt-3 bg-[#181818]py-6 px-4">
-                <h5 className="text-xl font-semibold mb-2">{title}</h5>
-                <p className="text-[#ADB7BE]">{description}</p>
-            </div>
+import { motion } from "framer-motion";
+import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import Image from "next/image";
+
+const ProjectCard = ({ project }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-[#181818] rounded-2xl overflow-hidden"
+    >
+      <div className="relative h-48 overflow-hidden group">
+        <Image
+          src={project.imgUrl}
+          alt={project.title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+          {project.gitUrl && (
+            <a
+              href={project.gitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors duration-300"
+            >
+              <FaGithub className="text-white text-xl" />
+            </a>
+          )}
+          {project.previewUrl && (
+            <a
+              href={project.previewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors duration-300"
+            >
+              <FaExternalLinkAlt className="text-white text-xl" />
+            </a>
+          )}
         </div>
-    );
+      </div>
+      <div className="p-6">
+        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+        <p className="text-[#ADB7BE] mb-4">{project.description}</p>
+        <div className="flex flex-wrap gap-2">
+          {(project.tags || []).map((tag, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
 };
 
 export default ProjectCard;
