@@ -5,6 +5,8 @@ import NavLink from "./NavLink";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import MenuOverlay from "./MenuOverlay";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { fetchProfile } from "../services/firebase";
 
 const navLinks = [
     {
@@ -24,6 +26,27 @@ const navLinks = [
 const Navbar = () => {
     const [navbarOpen, setNavbarOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [profile, setProfile] = useState(null);
+    const [imageError, setImageError] = useState(false);
+    const basePath = process.env.NODE_ENV === 'production' ? '/alidaho.github.io' : '';
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const data = await fetchProfile();
+                if (data?.logo) {
+                    // Ensure the logo path is absolute
+                    data.logo = data.logo.startsWith('http') ? data.logo : `${basePath}${data.logo}`;
+                }
+                setProfile(data);
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                setProfile(null);
+            }
+        };
+
+        loadProfile();
+    }, [basePath]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -36,6 +59,11 @@ const Navbar = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [scrolled]);
+
+    const handleImageError = () => {
+        console.error('Failed to load logo image');
+        setImageError(true);
+    };
 
     return (
         <motion.nav 
@@ -51,9 +79,25 @@ const Navbar = () => {
             <div className="flex container lg:py-4 flex-wrap items-center justify-between mx-auto px-4 py-2">
                 <Link
                     href={"/"}
-                    className="text-2xl md:text-5xl text-white font-semibold hover:text-primary-400 transition-colors duration-300"
+                    className="flex items-center"
                 >
-                    AD
+                    {profile?.logo && !imageError ? (
+                        <div className="relative w-12 h-12">
+                            <Image
+                                src={profile.logo}
+                                alt="Logo"
+                                fill
+                                className="object-contain"
+                                priority
+                                onError={handleImageError}
+                                unoptimized
+                            />
+                        </div>
+                    ) : (
+                        <span className="text-2xl md:text-5xl text-white font-semibold hover:text-primary-400 transition-colors duration-300">
+                            AD
+                        </span>
+                    )}
                 </Link>
                 <div className="mobile-menu block md:hidden">
                     {!navbarOpen ? (

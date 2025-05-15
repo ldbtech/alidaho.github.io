@@ -51,14 +51,89 @@ export const getCurrentUser = () => {
   return auth.currentUser;
 };
 
+// Profile Management Functions
+export const fetchProfile = async () => {
+  try {
+    const profileRef = ref(database, 'profile');
+    const snapshot = await get(profileRef);
+    return snapshot.val() || {
+      name: "Ali Dahou",
+      title: "Full Stack Developer",
+      bio: "I'm a passionate developer...",
+      profileImage: "/images/profile-image.jpg",
+      logo: "/images/logo.png",
+      socialLinks: {
+        github: "https://github.com/ldbtech",
+        linkedin: "https://www.linkedin.com/in/alidaho/"
+      }
+    };
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    throw new Error(`Failed to fetch profile: ${error.message}`);
+  }
+};
+
+export const saveProfile = async (profileData) => {
+  try {
+    if (!auth.currentUser) {
+      throw new Error("Authentication required");
+    }
+
+    const profileRef = ref(database, 'profile');
+    await set(profileRef, profileData);
+    console.log("Profile saved successfully");
+    return true;
+  } catch (error) {
+    console.error("Error in saveProfile:", error);
+    throw new Error(`Failed to save profile: ${error.message}`);
+  }
+};
+
+// Existing functions
 export const fetchData = async (path) => {
   try {
     const dataRef = ref(database, path);
     const snapshot = await get(dataRef);
-    return snapshot.val();
+    const data = snapshot.val();
+
+    if (path === 'about' && !data) {
+      // Return default structure for about section
+      return {
+        bio: '',
+        images: {
+          profile: '',  // Empty string for no image
+          background: '',
+          additional: []
+        },
+        skillGroups: [
+          { title: 'Frontend Development', items: [] },
+          { title: 'Backend Development', items: [] },
+          { title: 'Database & Cloud', items: [] },
+          { title: 'Tools & Others', items: [] }
+        ],
+        experience: [],
+        education: [],
+        tools: []
+      };
+    }
+
+    // If data exists, ensure image URLs are properly formatted
+    if (data && data.images) {
+      // Ensure all image URLs are absolute
+      Object.keys(data.images).forEach(key => {
+        if (data.images[key] && !data.images[key].startsWith('http')) {
+          // If it's not already an absolute URL, make it one
+          data.images[key] = data.images[key].startsWith('/') 
+            ? data.images[key] 
+            : `/${data.images[key]}`;
+        }
+      });
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error fetching data:", error);
-    throw new Error(`Failed to fetch data: ${error.message}`);
+    console.error(`Error fetching data from ${path}:`, error);
+    throw new Error(`Failed to fetch data from ${path}: ${error.message}`);
   }
 };
 

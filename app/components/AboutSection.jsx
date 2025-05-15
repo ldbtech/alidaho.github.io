@@ -6,12 +6,19 @@ import { useState, useEffect } from "react";
 import { FaCode, FaServer, FaDatabase, FaTools } from "react-icons/fa";
 import { fetchData } from "../services/firebase";
 
+const defaultSkillGroups = [
+  { title: 'Frontend Development', items: [] },
+  { title: 'Backend Development', items: [] },
+  { title: 'Database & Cloud', items: [] },
+  { title: 'Tools & Others', items: [] }
+];
+
 const AboutSection = () => {
-  const basePath = process.env.NODE_ENV === 'production' ? '/alidaho.github.io' : '';
   const [activeTab, setActiveTab] = useState("skills");
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imageError, setImageError] = useState(false);
 
   const tabs = [
     { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
@@ -25,11 +32,46 @@ const AboutSection = () => {
       try {
         const data = await fetchData('about');
         if (data) {
-          setContent(data);
+          // Ensure all required data structures exist with default values
+          const contentWithDefaults = {
+            ...data,
+            bio: data.bio || '',
+            images: {
+              profile: data.images?.profile || '',
+              background: data.images?.background || '',
+              additional: data.images?.additional || []
+            },
+            skillGroups: Array.isArray(data.skillGroups) ? data.skillGroups : defaultSkillGroups,
+            experience: Array.isArray(data.experience) ? data.experience : [],
+            education: Array.isArray(data.education) ? data.education : [],
+            tools: Array.isArray(data.tools) ? data.tools : []
+          };
+
+          // Ensure each skill group has the required structure
+          contentWithDefaults.skillGroups = contentWithDefaults.skillGroups.map(group => ({
+            title: group.title || 'Unnamed Group',
+            items: Array.isArray(group.items) ? group.items : []
+          }));
+
+          setContent(contentWithDefaults);
+        } else {
+          // If no data is returned, use default values
+          setContent({
+            bio: '',
+            images: {
+              profile: '',
+              background: '',
+              additional: []
+            },
+            skillGroups: defaultSkillGroups,
+            experience: [],
+            education: [],
+            tools: []
+          });
         }
       } catch (err) {
+        console.error('Error loading about content:', err);
         setError('Failed to load content');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -37,6 +79,11 @@ const AboutSection = () => {
 
     loadContent();
   }, []);
+
+  const handleImageError = () => {
+    console.error('Failed to load profile image');
+    setImageError(true);
+  };
 
   if (loading) {
     return (
@@ -69,14 +116,21 @@ const AboutSection = () => {
           className="col-span-4"
         >
           <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl transform rotate-6"></div>
-            <Image
-              src={`${basePath}/public/images/profile-portfolio.jpg`}
-              alt="about image"
-              className="absolute inset-0 rounded-2xl object-cover"
-              width={400}
-              height={400}
-            />
+            {content.images.profile && !imageError ? (
+              <Image
+                src={content.images.profile}
+                alt="Profile"
+                className="rounded-full object-cover"
+                fill
+                priority
+                unoptimized
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center text-white text-4xl font-bold">
+                AD
+              </div>
+            )}
           </div>
         </motion.div>
         <motion.div
@@ -110,13 +164,13 @@ const AboutSection = () => {
           <div className="bg-[#181818] p-6 rounded-2xl">
             {activeTab === "skills" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {content.skills.map((skillGroup) => (
-                  <div key={skillGroup.name} className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white">{skillGroup.name}</h3>
+                {content.skillGroups.map((group, index) => (
+                  <div key={index} className="space-y-2">
+                    <h3 className="text-xl font-semibold text-white">{group.title}</h3>
                     <div className="flex flex-wrap gap-2">
-                      {skillGroup.items.map((skill) => (
+                      {group.items.map((skill, skillIndex) => (
                         <span
-                          key={skill}
+                          key={skillIndex}
                           className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
                         >
                           {skill}
@@ -151,21 +205,14 @@ const AboutSection = () => {
               </div>
             )}
             {activeTab === "tools" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {content.tools.map((toolGroup) => (
-                  <div key={toolGroup.category} className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white">{toolGroup.category}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {toolGroup.items.map((tool) => (
-                        <span
-                          key={tool}
-                          className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
-                        >
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+              <div className="flex flex-wrap gap-2">
+                {content.tools.map((tool) => (
+                  <span
+                    key={tool}
+                    className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
+                  >
+                    {tool}
+                  </span>
                 ))}
               </div>
             )}
