@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes comet-trail {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes neonPulse {
+  0% {
+    opacity: 0.8;
+    box-shadow: 0 0 8px #00ffff, 0 0 12px #ff00ff;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px #00ffff, 0 0 16px #ff00ff;
+  }
+  100% {
+    opacity: 0.8;
+    box-shadow: 0 0 8px #00ffff, 0 0 12px #ff00ff;
+  }
+}
+
+@keyframes matrixRain {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes hologramShift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 4px 4px;
+  }
+}
+
 :root {
   --foreground: #ffffff;
   --background: #121212;
