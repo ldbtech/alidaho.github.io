@@ -7,19 +7,13 @@ import { FaAtom, FaPlus, FaTimes } from 'react-icons/fa';
 import EventCircle from './EventCircle'; // Import the new component
 
 const EventOrbit = ({ event, index, totalEvents, isExpanded, onEventClick }) => {
-  const orbitRadius = 80; // Radius of the orbit
-  const angle = (2 * Math.PI * index) / totalEvents; // Evenly distribute events
-  const x = Math.cos(angle) * orbitRadius;
-  const y = Math.sin(angle) * orbitRadius;
-
   return (
     <motion.div
-      initial={{ scale: 0, opacity: 0 }}
+      initial={{ scale: 0, opacity: 0, y: 0 }}
       animate={{ 
         scale: isExpanded ? 1 : 0,
         opacity: isExpanded ? 1 : 0,
-        x: isExpanded ? x : 0,
-        y: isExpanded ? y : 0,
+        y: isExpanded ? 40 + (index * 40) : 0, // Stack events vertically below
       }}
       transition={{
         type: "spring",
@@ -27,7 +21,7 @@ const EventOrbit = ({ event, index, totalEvents, isExpanded, onEventClick }) => 
         damping: 20,
         delay: index * 0.1
       }}
-      className="absolute"
+      className="absolute z-20"
       style={{
         left: '50%',
         top: '50%',
@@ -79,27 +73,6 @@ const DayCircle = ({ date, events, onDateClick }) => {
 
       {/* Main Circle Container */}
       <div className="relative w-16 h-16 md:w-24 md:h-24">
-        {/* Orbit Lines */}
-        {isExpanded && events.length > 0 && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.3 }}
-            className="absolute inset-0 rounded-full border-2 border-blue-500"
-          />
-        )}
-
-        {/* Event Orbits */}
-        {events.map((event, index) => (
-          <EventOrbit
-            key={event.id}
-            event={event}
-            index={index}
-            totalEvents={events.length}
-            isExpanded={isExpanded}
-            onEventClick={setSelectedEvent}
-          />
-        ))}
-
         {/* Main Circle */}
         <motion.div
           animate={controls}
@@ -109,7 +82,7 @@ const DayCircle = ({ date, events, onDateClick }) => {
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           className={`w-12 h-12 md:w-16 md:h-16 rounded-full ${events.length > 0 ? 'bg-blue-500' : 'bg-gray-700'} 
-            flex items-center justify-center cursor-pointer relative z-10
+            flex items-center justify-center cursor-pointer relative z-30
             ${events.length > 0 ? 'hover:ring-4 hover:ring-blue-500/50' : ''}
             shadow-lg hover:shadow-xl transition-all duration-300`}
         >
@@ -124,6 +97,18 @@ const DayCircle = ({ date, events, onDateClick }) => {
             <FaPlus className="w-4 h-4 md:w-6 md:h-6 text-gray-400" />
           )}
         </motion.div>
+
+        {/* Event Orbits */}
+        {events.map((event, index) => (
+          <EventOrbit
+            key={event.id}
+            event={event}
+            index={index}
+            totalEvents={events.length}
+            isExpanded={isExpanded}
+            onEventClick={setSelectedEvent}
+          />
+        ))}
       </div>
 
       {/* Event Details Modal */}
@@ -182,7 +167,18 @@ const DayCircle = ({ date, events, onDateClick }) => {
                         {value.map((item, index) => (
                           <li key={index} className="flex items-center gap-2 text-sm md:text-base text-gray-300">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                            {item}
+                            {key === 'links' ? (
+                              <a 
+                                href={item} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 underline transition-colors"
+                              >
+                                {item}
+                              </a>
+                            ) : (
+                              item
+                            )}
                           </li>
                         ))}
                       </ul>

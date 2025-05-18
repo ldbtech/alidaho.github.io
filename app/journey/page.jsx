@@ -170,29 +170,20 @@ const JourneyPage = () => {
           <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-800 transform -translate-y-1/2"></div>
 
           {/* Timeline Events */}
-          <div className="relative flex justify-between items-center h-full px-2 md:px-0">
-            {weekDates.map((date, index) => (
-              <DayCircle
-                key={index}
-                date={date}
-                events={getEventsForDate(date)}
-              />
-            ))}
+          <div className="relative flex items-center h-full overflow-x-auto md:overflow-x-visible px-4 md:px-0">
+            <div className="flex space-x-8 md:space-x-0 md:justify-between min-w-full md:min-w-0">
+              {weekDates.map((date, index) => (
+                <DayCircle
+                  key={index}
+                  date={date}
+                  events={getEventsForDate(date)}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Add Event Button */}
-        <div className="flex justify-center mb-8 md:mb-12">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowAddEvent(true)}
-            className="flex items-center space-x-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-white text-sm md:text-base font-semibold shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors"
-          >
-            <MdAdd className="w-4 h-4 md:w-5 md:h-5" />
-            <span>Add New Event</span>
-          </motion.button>
-        </div>
+  
 
         {/* Add Event Modal */}
         <AnimatePresence>
