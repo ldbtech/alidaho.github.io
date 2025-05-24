@@ -2,7 +2,6 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
     images: {
         unoptimized: true,
         remotePatterns: [
@@ -11,6 +10,7 @@ const nextConfig = {
                 hostname: '**',
             },
         ],
+        domains: ['firebasestorage.googleapis.com'],
     },
     basePath: process.env.NODE_ENV === 'production' ? '/alidaho.github.io' : '',
     trailingSlash: true,
