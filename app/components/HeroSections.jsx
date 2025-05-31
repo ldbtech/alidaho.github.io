@@ -10,14 +10,18 @@ import { fetchProfile } from '../services/firebase';
 const HeroSections = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const loadProfile = async () => {
             try {
+                console.log('HeroSections: Starting to load profile...');
                 const data = await fetchProfile();
+                console.log('HeroSections: Profile data loaded:', data);
                 setProfile(data);
             } catch (error) {
-                console.error('Error loading profile:', error);
+                console.error('HeroSections: Error loading profile:', error);
+                setError(error.message);
             } finally {
                 setLoading(false);
             }
@@ -26,7 +30,7 @@ const HeroSections = () => {
         loadProfile();
     }, []);
 
-    if (loading || !profile) {
+    if (loading) {
         return (
             <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -34,37 +38,64 @@ const HeroSections = () => {
         );
     }
 
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Profile</h2>
+                    <p className="text-gray-400">{error}</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!profile) {
+        return (
+            <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-400 mb-4">No Profile Data</h2>
+                    <p className="text-gray-400">Please check your Firebase configuration</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <section className="grid md:grid-cols-2 gap-4 items-center py-16">
-            <div>
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-4xl sm:text-5xl font-bold text-white mb-4"
-                >
-                    Hi, I&apos;m {profile.name}
-                </motion.h1>
-                <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-600 mb-4"
-                >
-                    {profile.title}
-                </motion.h2>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="text-[#ADB7BE] text-lg mb-8"
-                >
+        <section className="grid md:grid-cols-2 gap-4 items-center py-24">
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col gap-4"
+            >
+                <h1 className="text-4xl sm:text-5xl font-bold text-white">
+                    Hi, I&apos;m{" "}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">
+                        {profile.name}
+                    </span>
+                </h1>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#ADB7BE]">
+                    <TypeAnimation
+                        sequence={[
+                            profile.title,
+                            1000,
+                            "Full Stack Developer",
+                            1000,
+                            "AI Enthusiast",
+                            1000,
+                        ]}
+                        wrapper="span"
+                        speed={50}
+                        repeat={Infinity}
+                    />
+                </h2>
+                <p className="text-[#ADB7BE] text-base sm:text-lg">
                     {profile.bio}
-                </motion.p>
+                </p>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
                     className="flex gap-4"
                 >
                     <a
@@ -84,7 +115,7 @@ const HeroSections = () => {
                         LinkedIn
                     </a>
                 </motion.div>
-            </div>
+            </motion.div>
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

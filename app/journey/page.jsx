@@ -48,8 +48,6 @@ const JourneyPage = () => {
     for (let i = 0; i < 7; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
-      // Set time to midnight to avoid timezone issues
-      date.setHours(0, 0, 0, 0);
       dates.push(date);
     }
     return dates;
@@ -182,8 +180,6 @@ const JourneyPage = () => {
             </div>
           </div>
         </div>
-
-  
 
         {/* Add Event Modal */}
         <AnimatePresence>
