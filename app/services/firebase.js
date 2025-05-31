@@ -310,7 +310,6 @@ export const getProjectCount = async () => {
   }
 };
 
-<<<<<<< HEAD
 export const saveJourneyEvent = async (event) => {
   try {
     if (!auth.currentUser) {
@@ -328,7 +327,9 @@ export const saveJourneyEvent = async (event) => {
   } catch (error) {
     console.error("Error saving journey event:", error);
     throw new Error(`Failed to save journey event: ${error.message}`);
-=======
+  }
+};
+
 // Export the database instance
 export { database };
 
@@ -352,7 +353,6 @@ export const deleteThought = async (thoughtId) => {
   } catch (error) {
     console.error('Error deleting thought:', error);
     throw error;
->>>>>>> origin/feature/journey-timeline
   }
 };
 
