@@ -61,6 +61,7 @@ const AboutSection = () => {
     { id: "experience", label: "Experience", icon: <FaServer className="text-xl" /> },
     { id: "education", label: "Education", icon: <FaDatabase className="text-xl" /> },
     { id: "achievements", label: "Achievements", icon: <FaTrophy className="text-xl" /> },
+    { id: "programmingLanguages", label: "Programming", icon: <FaCode className="text-xl" /> },
     { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
     { id: "aiTools", label: "AI Tools", icon: <FaRobot className="text-xl" /> },
   ];
@@ -84,6 +85,8 @@ const AboutSection = () => {
             experience: Array.isArray(data.experience) ? data.experience : [],
             education: Array.isArray(data.education) ? data.education : [],
             achievements: Array.isArray(data.achievements) ? data.achievements : [],
+            programmingLanguages: Array.isArray(data.programmingLanguages) ? data.programmingLanguages : [],
+            spokenLanguages: Array.isArray(data.spokenLanguages) ? data.spokenLanguages : [],
             aiTools: Array.isArray(data.aiTools) ? data.aiTools : []
           };
 
@@ -108,6 +111,8 @@ const AboutSection = () => {
             experience: [],
             education: [],
             achievements: [],
+            programmingLanguages: [],
+            spokenLanguages: [],
             aiTools: []
           });
         }
@@ -214,22 +219,23 @@ const AboutSection = () => {
         
         <div className="bg-surface-secondary rounded-apple-lg p-8 shadow-apple-light">
             {activeTab === "skills" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {content.skillGroups.map((group, index) => (
-                  <div key={index} className="space-y-4">
-                    <h3 className="text-2xl font-semibold text-primary">{group.title}</h3>
-                    <div className="flex flex-wrap gap-3">
-                      {group.items.map((skill, skillIndex) => (
-                        <span
-                          key={skillIndex}
-                          className="px-4 py-2 bg-surface-tertiary text-secondary rounded-apple text-sm font-medium"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
+              <div className="flex flex-wrap gap-3">
+                {content.skillGroups.map((group, index) => 
+                  group.items.map((skill, skillIndex) => (
+                    <span
+                      key={`${index}-${skillIndex}`}
+                      className="px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 border border-green-500/30 rounded-apple text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                )}
+                {content.skillGroups.every(group => group.items.length === 0) && (
+                  <div className="text-center py-8 w-full">
+                    <h3 className="text-xl font-semibold text-primary mb-2">No Skills Yet</h3>
+                    <p className="text-secondary">Add your skills in the admin panel to showcase your expertise!</p>
                   </div>
-                ))}
+                )}
               </div>
             )}
             {activeTab === "experience" && (
@@ -284,7 +290,7 @@ const AboutSection = () => {
               </div>
             )}
             {activeTab === "education" && (
-              <div className="space-y-6">
+              <div className="space-y-12">
                 {content.education
                   .sort((a, b) => {
                     // Extract start date from period string with better parsing
@@ -320,15 +326,82 @@ const AboutSection = () => {
                     
                     return dateB - dateA;
                   })
-                  .map((edu, index) => (
-                    <div key={index} className="bg-surface rounded-apple p-6 shadow-apple-light">
-                      <div className="space-y-2">
-                        <h3 className="text-2xl font-semibold text-primary">{edu.degree}</h3>
-                        <p className="text-accent font-medium text-lg">{edu.school}</p>
-                        <p className="text-tertiary text-sm font-medium">{edu.period}</p>
-                      </div>
+                  .map((edu, index) => {
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        className="group"
+                      >
+                        {/* Minimalist Card */}
+                        <div className="bg-surface-secondary/50 backdrop-blur-sm border border-separator rounded-2xl p-8 hover:border-accent/30 transition-all duration-300">
+                          {/* Header */}
+                          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
+                            <div className="space-y-3">
+                              <h3 className="text-2xl font-bold text-primary group-hover:text-accent transition-colors duration-300">
+                                {edu.degree}
+                              </h3>
+                              <p className="text-accent font-medium text-lg">{edu.school}</p>
+                              {edu.description && (
+                                <p className="text-secondary leading-relaxed max-w-2xl">
+                                  {edu.description}
+                                </p>
+                              )}
+                            </div>
+                            
+                            <div className="flex flex-col items-end gap-3">
+                              <span className="px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-lg">
+                                {edu.period}
+                              </span>
+                              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Coursework Section - Only show if courses exist */}
+                          {edu.courses && edu.courses.length > 0 && (
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-semibold text-primary">Relevant Coursework</h4>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                {edu.courses.map((course, courseIndex) => (
+                                  <div
+                                    key={courseIndex}
+                                    className="px-3 py-2 bg-surface/50 border border-separator rounded-lg text-sm text-secondary hover:bg-accent/10 hover:text-accent hover:border-accent/20 transition-colors duration-200 cursor-pointer"
+                                  >
+                                    {course}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                
+                {content.education.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center py-16"
+                  >
+                    <div className="w-20 h-20 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                      <svg className="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
                     </div>
-                  ))}
+                    <h3 className="text-xl font-semibold text-primary mb-2">No Education Added Yet</h3>
+                    <p className="text-secondary">
+                      Add your educational background in the admin panel to showcase your academic achievements!
+                    </p>
+                  </motion.div>
+                )}
               </div>
             )}
             {activeTab === "achievements" && (
@@ -421,6 +494,24 @@ const AboutSection = () => {
                     <FaTrophy className="text-6xl text-tertiary mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-primary mb-2">No Achievements Yet</h3>
                     <p className="text-secondary">Add your achievements in the admin panel to showcase your accomplishments!</p>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab === "programmingLanguages" && (
+              <div className="flex flex-wrap gap-3">
+                {content.programmingLanguages.map((lang, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-300 border border-blue-500/30 rounded-apple text-sm font-medium"
+                  >
+                    {lang.language} ({lang.level})
+                  </span>
+                ))}
+                {content.programmingLanguages.length === 0 && (
+                  <div className="text-center py-8 w-full">
+                    <h3 className="text-xl font-semibold text-primary mb-2">No Programming Languages Yet</h3>
+                    <p className="text-secondary">Add your programming languages and proficiency levels in the admin panel!</p>
                   </div>
                 )}
               </div>

@@ -5,30 +5,36 @@ import { TypeAnimation } from "react-type-animation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import { fetchProfile } from '../services/firebase';
+import { fetchProfile, fetchData } from '../services/firebase';
 import ResumePreview from './ResumePreview';
 
 const HeroSections = () => {
     const [profile, setProfile] = useState(null);
+    const [about, setAbout] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const loadProfile = async () => {
+        const loadData = async () => {
             try {
-                console.log('HeroSections: Starting to load profile...');
-                const data = await fetchProfile();
-                console.log('HeroSections: Profile data loaded:', data);
-                setProfile(data);
+                console.log('HeroSections: Starting to load data...');
+                const [profileData, aboutData] = await Promise.all([
+                    fetchProfile(),
+                    fetchData('about')
+                ]);
+                console.log('HeroSections: Profile data loaded:', profileData);
+                console.log('HeroSections: About data loaded:', aboutData);
+                setProfile(profileData);
+                setAbout(aboutData);
             } catch (error) {
-                console.error('HeroSections: Error loading profile:', error);
+                console.error('HeroSections: Error loading data:', error);
                 setError(error.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadProfile();
+        loadData();
     }, []);
 
     if (loading) {
@@ -135,6 +141,35 @@ const HeroSections = () => {
                         resumeName={profile.resumeName || "Resume"}
                         showDownload={false}
                     />
+                </motion.div>
+
+                {/* Languages I Speak */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
+                    className="mt-8"
+                >
+                    <div className="text-center mb-4">
+                        <h3 className="text-lg font-semibold text-primary mb-2">Languages I Speak</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                        {about?.spokenLanguages && about.spokenLanguages.length > 0 ? (
+                            about.spokenLanguages.map((lang, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2 px-4 py-2 bg-surface-secondary rounded-apple shadow-apple-light"
+                                >
+                                    <span className="text-primary font-medium">{lang.language}</span>
+                                    <span className="text-sm text-secondary">({lang.level})</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-4">
+                                <p className="text-secondary">Add your spoken languages in the admin panel to showcase your language skills!</p>
+                            </div>
+                        )}
+                    </div>
                 </motion.div>
 
             </div>

@@ -15,7 +15,9 @@ import {
   FaBriefcase,
   FaTrophy,
   FaCog,
-  FaRobot
+  FaRobot,
+  FaCode,
+  FaLanguage
 } from 'react-icons/fa';
 import { fetchData, saveAbout } from '../../services/firebase';
 import {
@@ -52,6 +54,8 @@ const defaultAboutState = {
         { title: 'Artificial Intelligence', items: [] },
         { title: 'Tools & Others', items: [] }
     ],
+    programmingLanguages: [],
+    spokenLanguages: [],
     experience: [],
     education: [],
     achievements: [],
@@ -370,6 +374,10 @@ const AboutManager = () => {
     const [selectedSkillGroup, setSelectedSkillGroup] = useState('Frontend Development');
     const [newSkill, setNewSkill] = useState('');
     const [newAiTool, setNewAiTool] = useState('');
+    const [newProgrammingLanguage, setNewProgrammingLanguage] = useState('');
+    const [newProgrammingLevel, setNewProgrammingLevel] = useState('');
+    const [newSpokenLanguage, setNewSpokenLanguage] = useState('');
+    const [newSpokenLevel, setNewSpokenLevel] = useState('');
     const [selectedImageType, setSelectedImageType] = useState('profile');
     const [newImageUrl, setNewImageUrl] = useState('');
     
@@ -378,6 +386,8 @@ const AboutManager = () => {
         bio: true,
         images: false,
         skills: false,
+        programmingLanguages: false,
+        spokenLanguages: false,
         aiTools: false,
         experience: false,
         education: false,
@@ -422,6 +432,8 @@ const AboutManager = () => {
                         additional: data.images?.additional || defaultAboutState.images.additional
                     },
                     skillGroups: Array.isArray(data.skillGroups) ? data.skillGroups : defaultAboutState.skillGroups,
+                    programmingLanguages: Array.isArray(data.programmingLanguages) ? data.programmingLanguages : defaultAboutState.programmingLanguages,
+                    spokenLanguages: Array.isArray(data.spokenLanguages) ? data.spokenLanguages : defaultAboutState.spokenLanguages,
                     experience: Array.isArray(data.experience) ? data.experience : defaultAboutState.experience,
                     education: Array.isArray(data.education) ? data.education : defaultAboutState.education,
                     aiTools: Array.isArray(data.aiTools) ? data.aiTools : defaultAboutState.aiTools
@@ -511,6 +523,46 @@ const AboutManager = () => {
         }));
     };
 
+    const addProgrammingLanguage = () => {
+        if (!newProgrammingLanguage.trim() || !newProgrammingLevel.trim()) return;
+        setAbout(prev => ({
+            ...prev,
+            programmingLanguages: [...prev.programmingLanguages, {
+                language: newProgrammingLanguage.trim(),
+                level: newProgrammingLevel.trim()
+            }]
+        }));
+        setNewProgrammingLanguage('');
+        setNewProgrammingLevel('');
+    };
+
+    const removeProgrammingLanguage = (index) => {
+        setAbout(prev => ({
+            ...prev,
+            programmingLanguages: prev.programmingLanguages.filter((_, i) => i !== index)
+        }));
+    };
+
+    const addSpokenLanguage = () => {
+        if (!newSpokenLanguage.trim() || !newSpokenLevel.trim()) return;
+        setAbout(prev => ({
+            ...prev,
+            spokenLanguages: [...prev.spokenLanguages, {
+                language: newSpokenLanguage.trim(),
+                level: newSpokenLevel.trim()
+            }]
+        }));
+        setNewSpokenLanguage('');
+        setNewSpokenLevel('');
+    };
+
+    const removeSpokenLanguage = (index) => {
+        setAbout(prev => ({
+            ...prev,
+            spokenLanguages: prev.spokenLanguages.filter((_, i) => i !== index)
+        }));
+    };
+
     const addExperience = () => {
         setAbout(prev => ({
             ...prev,
@@ -545,7 +597,7 @@ const AboutManager = () => {
             ...prev,
             education: [
                 ...prev.education,
-                { degree: '', school: '', period: '', description: '' }
+                { degree: '', school: '', period: '', description: '', courses: [] }
             ]
         }));
     };
@@ -566,6 +618,53 @@ const AboutManager = () => {
         setAbout(prev => ({
             ...prev,
             education: prev.education.filter((_, i) => i !== index)
+        }));
+    };
+
+    const addCourse = (eduIndex) => {
+        setAbout(prev => ({
+            ...prev,
+            education: prev.education.map((edu, i) => {
+                if (i === eduIndex) {
+                    return {
+                        ...edu,
+                        courses: [...(edu.courses || []), '']
+                    };
+                }
+                return edu;
+            })
+        }));
+    };
+
+    const updateCourse = (eduIndex, courseIndex, value) => {
+        setAbout(prev => ({
+            ...prev,
+            education: prev.education.map((edu, i) => {
+                if (i === eduIndex) {
+                    const updatedCourses = [...(edu.courses || [])];
+                    updatedCourses[courseIndex] = value;
+                    return {
+                        ...edu,
+                        courses: updatedCourses
+                    };
+                }
+                return edu;
+            })
+        }));
+    };
+
+    const removeCourse = (eduIndex, courseIndex) => {
+        setAbout(prev => ({
+            ...prev,
+            education: prev.education.map((edu, i) => {
+                if (i === eduIndex) {
+                    return {
+                        ...edu,
+                        courses: (edu.courses || []).filter((_, j) => j !== courseIndex)
+                    };
+                }
+                return edu;
+            })
         }));
     };
 
@@ -836,6 +935,118 @@ const AboutManager = () => {
                         </div>
                     </CollapsibleSection>
 
+                    {/* Programming Languages Section */}
+                    <CollapsibleSection
+                        title="Programming Languages"
+                        icon={FaCode}
+                        isOpen={openSections.programmingLanguages}
+                        onToggle={() => toggleSection('programmingLanguages')}
+                        count={about.programmingLanguages.length}
+                    >
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <AppleInput
+                                    label="Language"
+                                    value={newProgrammingLanguage}
+                                    onChange={(e) => setNewProgrammingLanguage(e.target.value)}
+                                    placeholder="e.g., JavaScript, Python, C++"
+                                />
+                                <AppleInput
+                                    label="Proficiency Level"
+                                    value={newProgrammingLevel}
+                                    onChange={(e) => setNewProgrammingLevel(e.target.value)}
+                                    placeholder="e.g., Expert, Advanced, Intermediate"
+                                />
+                            </div>
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addProgrammingLanguage}>
+                                    <FaPlus className="mr-2" />
+                                    Add Programming Language
+                                </AppleButton>
+                            </div>
+                            <div className="space-y-3">
+                                {about.programmingLanguages.map((lang, index) => (
+                                    <motion.div
+                                        key={index}
+                                        className="flex items-center justify-between bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600"
+                                        whileHover={{ scale: 1.02 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-medium">{lang.language}</span>
+                                            <span className="text-sm bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full">
+                                                {lang.level}
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeProgrammingLanguage(index)}
+                                            className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </CollapsibleSection>
+
+                    {/* Spoken Languages Section */}
+                    <CollapsibleSection
+                        title="Languages I Speak"
+                        icon={FaLanguage}
+                        isOpen={openSections.spokenLanguages}
+                        onToggle={() => toggleSection('spokenLanguages')}
+                        count={about.spokenLanguages.length}
+                    >
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <AppleInput
+                                    label="Language"
+                                    value={newSpokenLanguage}
+                                    onChange={(e) => setNewSpokenLanguage(e.target.value)}
+                                    placeholder="e.g., English, Spanish, French"
+                                />
+                                <AppleInput
+                                    label="Proficiency Level"
+                                    value={newSpokenLevel}
+                                    onChange={(e) => setNewSpokenLevel(e.target.value)}
+                                    placeholder="e.g., Native, Fluent, Intermediate"
+                                />
+                            </div>
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addSpokenLanguage}>
+                                    <FaPlus className="mr-2" />
+                                    Add Spoken Language
+                                </AppleButton>
+                            </div>
+                            <div className="space-y-3">
+                                {about.spokenLanguages.map((lang, index) => (
+                                    <motion.div
+                                        key={index}
+                                        className="flex items-center justify-between bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600"
+                                        whileHover={{ scale: 1.02 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-medium">{lang.language}</span>
+                                            <span className="text-sm bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full">
+                                                {lang.level}
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeSpokenLanguage(index)}
+                                            className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </CollapsibleSection>
+
                     {/* AI Tools Section */}
                     <CollapsibleSection
                         title="AI Tools & Technologies"
@@ -865,13 +1076,13 @@ const AboutManager = () => {
                                         transition={{ duration: 0.2 }}
                                     >
                                         <span className="text-sm">{aiTool}</span>
-                            <button
-                                type="button"
+                                        <button
+                                            type="button"
                                             onClick={() => removeAiTool(index)}
                                             className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors ml-1"
-                            >
+                                        >
                                             ×
-                            </button>
+                                        </button>
                                     </motion.div>
                                 ))}
                             </div>
@@ -890,7 +1101,7 @@ const AboutManager = () => {
                             <div className="flex justify-end">
                                 <AppleButton onClick={addExperience}>
                                     <FaPlus className="mr-2" />
-                                    Add Experience
+                                Add Experience
                                 </AppleButton>
                         </div>
                         <DndContext
@@ -978,6 +1189,47 @@ const AboutManager = () => {
                                             placeholder="Additional details about your education..."
                                             rows={3}
                                         />
+                                        
+                                        {/* Courses Section */}
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                    Relevant Courses
+                                                </label>
+                                                <AppleButton
+                                                    onClick={() => addCourse(index)}
+                                                    size="sm"
+                                                    variant="secondary"
+                                                >
+                                                    <FaPlus className="mr-1" />
+                                                    Add Course
+                                                </AppleButton>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {(edu.courses || []).map((course, courseIndex) => (
+                                                    <div key={courseIndex} className="flex items-center gap-2">
+                                                        <AppleInput
+                                                            value={course}
+                                                            onChange={(e) => updateCourse(index, courseIndex, e.target.value)}
+                                                            placeholder="e.g., Data Structures & Algorithms"
+                                                            className="flex-1"
+                                                        />
+                                                        <AppleButton
+                                                            onClick={() => removeCourse(index, courseIndex)}
+                                                            variant="danger"
+                                                            size="sm"
+                                                        >
+                                                            <FaTrash />
+                                                        </AppleButton>
+                                                    </div>
+                                                ))}
+                                                {(!edu.courses || edu.courses.length === 0) && (
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400 italic">
+                                                        No courses added yet. Click "Add Course" to add relevant coursework.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
                                     </motion.div>
                             ))}
                         </div>
