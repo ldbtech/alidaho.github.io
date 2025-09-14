@@ -137,22 +137,6 @@ const HeroSections = () => {
                     />
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.9 }}
-                    className="flex justify-center"
-                >
-                    <div className="w-32 h-32 md:w-40 md:h-40 relative">
-                        <Image
-                            src={profile.profileImage}
-                            alt="Profile"
-                            fill
-                            className="rounded-apple-xl object-cover shadow-apple"
-                            priority
-                        />
-                    </div>
-                </motion.div>
             </div>
         </section>
     );

@@ -26,8 +26,8 @@ const AchievementsSection = () => {
         },
         {
             id: 3,
-            metric: "Years",
-            value: "2",
+            metric: "Years of Experience",
+            value: "1",
         },
     ]);
 

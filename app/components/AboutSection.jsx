@@ -3,13 +3,14 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FaCode, FaServer, FaDatabase, FaTools, FaTrophy } from "react-icons/fa";
+import { FaCode, FaServer, FaDatabase, FaTrophy, FaRobot } from "react-icons/fa";
 import { fetchData } from "../services/firebase";
 
 const defaultSkillGroups = [
   { title: 'Frontend Development', items: [] },
   { title: 'Backend Development', items: [] },
   { title: 'Database & Cloud', items: [] },
+  { title: 'Artificial Intelligence', items: [] },
   { title: 'Tools & Others', items: [] }
 ];
 
@@ -59,9 +60,9 @@ const AboutSection = () => {
   const tabs = [
     { id: "experience", label: "Experience", icon: <FaServer className="text-xl" /> },
     { id: "education", label: "Education", icon: <FaDatabase className="text-xl" /> },
-    { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
     { id: "achievements", label: "Achievements", icon: <FaTrophy className="text-xl" /> },
-    { id: "tools", label: "Tools", icon: <FaTools className="text-xl" /> },
+    { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
+    { id: "aiTools", label: "AI Tools", icon: <FaRobot className="text-xl" /> },
   ];
 
   useEffect(() => {
@@ -83,7 +84,7 @@ const AboutSection = () => {
             experience: Array.isArray(data.experience) ? data.experience : [],
             education: Array.isArray(data.education) ? data.education : [],
             achievements: Array.isArray(data.achievements) ? data.achievements : [],
-            tools: Array.isArray(data.tools) ? data.tools : []
+            aiTools: Array.isArray(data.aiTools) ? data.aiTools : []
           };
 
           // Ensure each skill group has the required structure
@@ -107,7 +108,7 @@ const AboutSection = () => {
             experience: [],
             education: [],
             achievements: [],
-            tools: []
+            aiTools: []
           });
         }
       } catch (err) {
@@ -424,16 +425,22 @@ const AboutSection = () => {
                 )}
               </div>
             )}
-            {activeTab === "tools" && (
+            {activeTab === "aiTools" && (
               <div className="flex flex-wrap gap-3">
-                {content.tools.map((tool) => (
+                {content.aiTools.map((aiTool) => (
                   <span
-                    key={tool}
-                    className="px-4 py-2 bg-surface-tertiary text-secondary rounded-apple text-sm font-medium"
+                    key={aiTool}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 rounded-apple text-sm font-medium"
                   >
-                    {tool}
+                    {aiTool}
                   </span>
                 ))}
+                {content.aiTools.length === 0 && (
+                  <div className="text-center py-8">
+                    <h3 className="text-xl font-semibold text-primary mb-2">No AI Tools Yet</h3>
+                    <p className="text-secondary">Add your AI tools and technologies in the admin panel to showcase your AI expertise!</p>
+                  </div>
+                )}
               </div>
             )}
         </div>

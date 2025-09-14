@@ -1,8 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FaPlus, FaEdit, FaTrash, FaGripVertical } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FaPlus, 
+  FaEdit, 
+  FaTrash, 
+  FaGripVertical, 
+  FaChevronDown, 
+  FaChevronUp,
+  FaImage,
+  FaUser,
+  FaGraduationCap,
+  FaBriefcase,
+  FaTrophy,
+  FaCog,
+  FaRobot
+} from 'react-icons/fa';
 import { fetchData, saveAbout } from '../../services/firebase';
 import {
   DndContext,
@@ -35,12 +49,131 @@ const defaultAboutState = {
         { title: 'Frontend Development', items: [] },
         { title: 'Backend Development', items: [] },
         { title: 'Database & Cloud', items: [] },
+        { title: 'Artificial Intelligence', items: [] },
         { title: 'Tools & Others', items: [] }
     ],
     experience: [],
     education: [],
     achievements: [],
-    tools: []
+    aiTools: []
+};
+
+// Collapsible Section Component
+const CollapsibleSection = ({ 
+    title, 
+    icon: Icon, 
+    children, 
+    isOpen, 
+    onToggle, 
+    count = null,
+    className = ""
+}) => (
+    <motion.div 
+        className={`bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${className}`}
+        initial={false}
+        animate={{ height: 'auto' }}
+    >
+        <button
+            onClick={onToggle}
+            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-all duration-200 group"
+        >
+            <div className="flex items-center gap-3">
+                <Icon className="text-slate-600 dark:text-slate-400 text-lg" />
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>
+                {count !== null && (
+                    <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-1 rounded-full">
+                        {count}
+                    </span>
+                )}
+            </div>
+            <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors"
+            >
+                <FaChevronDown />
+            </motion.div>
+        </button>
+        
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                >
+                    <div className="px-6 pb-6 pt-2">
+                        {children}
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    </motion.div>
+);
+
+// Apple-style Input Component
+const AppleInput = ({ label, value, onChange, placeholder, type = "text", rows = 1, className = "" }) => (
+    <div className={`space-y-2 ${className}`}>
+        {label && (
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                {label}
+            </label>
+        )}
+        {rows > 1 ? (
+            <textarea
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                rows={rows}
+                className="w-full bg-white/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/50 dark:focus:ring-slate-500/50 focus:border-slate-400 dark:focus:border-slate-500 transition-all duration-200 resize-none"
+            />
+        ) : (
+            <input
+                type={type}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className="w-full bg-white/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/50 dark:focus:ring-slate-500/50 focus:border-slate-400 dark:focus:border-slate-500 transition-all duration-200"
+            />
+        )}
+    </div>
+);
+
+// Apple-style Button Component
+const AppleButton = ({ 
+    children, 
+    onClick, 
+    variant = "primary", 
+    size = "md", 
+    className = "",
+    type = "button"
+}) => {
+    const baseClasses = "font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900";
+    
+    const variants = {
+        primary: "bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-700 text-white focus:ring-slate-500/50",
+        secondary: "bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 focus:ring-slate-400/50",
+        danger: "bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 focus:ring-red-400/50",
+        success: "bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 focus:ring-green-400/50"
+    };
+    
+    const sizes = {
+        sm: "px-3 py-2 text-sm",
+        md: "px-4 py-2.5 text-sm",
+        lg: "px-6 py-3 text-base"
+    };
+    
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+        >
+            {children}
+        </button>
+    );
 };
 
 // Sortable Experience Item Component
@@ -61,72 +194,171 @@ const SortableExperienceItem = ({ exp, index, updateExperience, removeExperience
     };
 
     return (
-        <div
+        <motion.div
             ref={setNodeRef}
             style={style}
-            className={`bg-[#2A2A2A] p-4 rounded-lg space-y-4 ${isDragging ? 'shadow-lg' : ''}`}
+            className={`bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md ${isDragging ? 'shadow-2xl shadow-slate-400/20 dark:shadow-slate-600/20' : ''}`}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
         >
             <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <div
                         {...attributes}
                         {...listeners}
-                        className="cursor-grab hover:cursor-grabbing p-1 text-gray-400 hover:text-white transition-colors"
+                        className="cursor-grab hover:cursor-grabbing p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50"
                     >
                         <FaGripVertical />
                     </div>
-                    <h3 className="text-lg font-semibold text-white">Experience {index + 1}</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Experience {index + 1}</h3>
                 </div>
-                <button
-                    type="button"
+                <AppleButton
                     onClick={() => removeExperience(index)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
+                    variant="danger"
+                    size="sm"
                 >
                     <FaTrash />
-                </button>
+                </AppleButton>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-200 mb-1">Title</label>
-                    <input
-                        type="text"
+                <AppleInput
+                    label="Job Title"
                         value={exp.title}
                         onChange={(e) => updateExperience(index, 'title', e.target.value)}
-                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-200 mb-1">Company</label>
-                    <input
-                        type="text"
+                    placeholder="e.g., Software Engineer"
+                />
+                <AppleInput
+                    label="Company"
                         value={exp.company}
                         onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-200 mb-1">Period</label>
-                    <input
-                        type="text"
+                    placeholder="e.g., Apple Inc."
+                />
+                <AppleInput
+                    label="Period"
                         value={exp.period}
                         onChange={(e) => updateExperience(index, 'period', e.target.value)}
                         placeholder="e.g., March 2024 - August 2024"
-                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                </div>
             </div>
             
-            <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">Description</label>
-                <textarea
+            <AppleInput
+                label="Description"
                     value={exp.description}
                     onChange={(e) => updateExperience(index, 'description', e.target.value)}
+                placeholder="Describe your role and achievements..."
                     rows={3}
-                    className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+        </motion.div>
+    );
+};
+
+// Sortable Achievement Item Component
+const SortableAchievementItem = ({ achievement, index, updateAchievement, removeAchievement }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: `achievement-${index}` });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <motion.div
+            ref={setNodeRef}
+            style={style}
+            className={`bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md ${isDragging ? 'shadow-2xl shadow-slate-400/20 dark:shadow-slate-600/20' : ''}`}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+        >
+            <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab hover:cursor-grabbing p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50"
+                    >
+                        <FaGripVertical />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Achievement {index + 1}</h3>
+                </div>
+                <AppleButton
+                    onClick={() => removeAchievement(index)}
+                    variant="danger"
+                    size="sm"
+                >
+                    <FaTrash />
+                </AppleButton>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AppleInput
+                    label="Title"
+                    value={achievement.title}
+                    onChange={(e) => updateAchievement(index, 'title', e.target.value)}
+                    placeholder="Achievement Title"
+                />
+                <AppleInput
+                    label="Category"
+                    value={achievement.category}
+                    onChange={(e) => updateAchievement(index, 'category', e.target.value)}
+                    placeholder="e.g., Hackathon, Sports, Organization"
+                />
+                <AppleInput
+                    label="Date"
+                    value={achievement.date}
+                    onChange={(e) => updateAchievement(index, 'date', e.target.value)}
+                    placeholder="e.g., March 2024"
+                />
+                <AppleInput
+                    label="Organization"
+                    value={achievement.organization}
+                    onChange={(e) => updateAchievement(index, 'organization', e.target.value)}
+                    placeholder="Organization"
+                />
+                <AppleInput
+                    label="Position/Role"
+                    value={achievement.position}
+                    onChange={(e) => updateAchievement(index, 'position', e.target.value)}
+                    placeholder="Position/Role"
+                />
+                <AppleInput
+                    label="Location"
+                    value={achievement.location}
+                    onChange={(e) => updateAchievement(index, 'location', e.target.value)}
+                    placeholder="Location"
+                />
+                <AppleInput
+                    label="Image URL"
+                    value={achievement.image}
+                    onChange={(e) => updateAchievement(index, 'image', e.target.value)}
+                    placeholder="Image URL"
+                    type="url"
+                />
+                <AppleInput
+                    label="Link URL"
+                    value={achievement.link}
+                    onChange={(e) => updateAchievement(index, 'link', e.target.value)}
+                    placeholder="Link URL (optional)"
+                    type="url"
                 />
             </div>
-        </div>
+            
+            <AppleInput
+                label="Description"
+                value={achievement.description}
+                onChange={(e) => updateAchievement(index, 'description', e.target.value)}
+                placeholder="Describe the achievement..."
+                rows={3}
+            />
+        </motion.div>
     );
 };
 
@@ -137,9 +369,20 @@ const AboutManager = () => {
     const [success, setSuccess] = useState(false);
     const [selectedSkillGroup, setSelectedSkillGroup] = useState('Frontend Development');
     const [newSkill, setNewSkill] = useState('');
-    const [newTool, setNewTool] = useState('');
+    const [newAiTool, setNewAiTool] = useState('');
     const [selectedImageType, setSelectedImageType] = useState('profile');
     const [newImageUrl, setNewImageUrl] = useState('');
+    
+    // Collapsible sections state
+    const [openSections, setOpenSections] = useState({
+        bio: true,
+        images: false,
+        skills: false,
+        aiTools: false,
+        experience: false,
+        education: false,
+        achievements: false
+    });
 
     // Drag and drop sensors
     const sensors = useSensors(
@@ -148,6 +391,14 @@ const AboutManager = () => {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    // Toggle section function
+    const toggleSection = (section) => {
+        setOpenSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
 
     useEffect(() => {
         loadAbout();
@@ -173,7 +424,7 @@ const AboutManager = () => {
                     skillGroups: Array.isArray(data.skillGroups) ? data.skillGroups : defaultAboutState.skillGroups,
                     experience: Array.isArray(data.experience) ? data.experience : defaultAboutState.experience,
                     education: Array.isArray(data.education) ? data.education : defaultAboutState.education,
-                    tools: Array.isArray(data.tools) ? data.tools : defaultAboutState.tools
+                    aiTools: Array.isArray(data.aiTools) ? data.aiTools : defaultAboutState.aiTools
                 };
                 setAbout(formattedData);
             }
@@ -243,19 +494,20 @@ const AboutManager = () => {
         }));
     };
 
-    const addTool = () => {
-        if (!newTool.trim()) return;
+
+    const addAiTool = () => {
+        if (!newAiTool.trim()) return;
         setAbout(prev => ({
             ...prev,
-            tools: [...prev.tools, newTool.trim()]
+            aiTools: [...prev.aiTools, newAiTool.trim()]
         }));
-        setNewTool('');
+        setNewAiTool('');
     };
 
-    const removeTool = (index) => {
+    const removeAiTool = (index) => {
         setAbout(prev => ({
             ...prev,
-            tools: prev.tools.filter((_, i) => i !== index)
+            aiTools: prev.aiTools.filter((_, i) => i !== index)
         }));
     };
 
@@ -361,10 +613,21 @@ const AboutManager = () => {
         const { active, over } = event;
 
         if (active.id !== over.id) {
-            setAbout(prev => ({
-                ...prev,
-                experience: arrayMove(prev.experience, active.id, over.id)
-            }));
+            // Check if it's an achievement drag
+            if (typeof active.id === 'string' && active.id.startsWith('achievement-')) {
+                const activeIndex = parseInt(active.id.replace('achievement-', ''));
+                const overIndex = parseInt(over.id.replace('achievement-', ''));
+                setAbout(prev => ({
+                    ...prev,
+                    achievements: arrayMove(prev.achievements, activeIndex, overIndex)
+                }));
+            } else {
+                // Experience drag
+                setAbout(prev => ({
+                    ...prev,
+                    experience: arrayMove(prev.experience, active.id, over.id)
+                }));
+            }
         }
     };
 
@@ -392,99 +655,116 @@ const AboutManager = () => {
     };
 
     const hasImage = (type) => {
-        return about?.images?.[type] && about.images[type].trim() !== '';
+        return about?.images?.[type] && typeof about.images[type] === 'string' && about.images[type].trim() !== '';
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#121212] p-8">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                    <p className="text-[#ADB7BE] mt-4">Loading content...</p>
+                    <p className="text-gray-300 mt-4 text-lg">Loading content...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#121212] p-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-8">
-                    Manage <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">About</span> Section
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+            <div className="max-w-6xl mx-auto p-6">
+                {/* Header */}
+                <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                >
+                    <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                        Manage <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-800 dark:from-slate-300 dark:to-slate-100">About</span> Section
                 </h1>
+                    <p className="text-slate-600 dark:text-slate-400 text-lg">Organize your professional information with elegance</p>
+                </motion.div>
 
+                {/* Status Messages */}
                 {error && (
-                    <div className="mb-4 p-4 bg-red-500/10 border border-red-500 rounded-lg">
-                        <p className="text-red-500">{error}</p>
-                    </div>
+                    <motion.div 
+                        className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-2xl backdrop-blur-sm"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <p className="text-red-700 dark:text-red-300 text-center">{error}</p>
+                    </motion.div>
                 )}
 
                 {success && (
-                    <div className="mb-4 p-4 bg-green-500/10 border border-green-500 rounded-lg">
-                        <p className="text-green-500">Content saved successfully!</p>
-                    </div>
+                    <motion.div 
+                        className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-2xl backdrop-blur-sm"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <p className="text-green-700 dark:text-green-300 text-center">Content saved successfully!</p>
+                    </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Bio Section */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-200 mb-2">
-                            Bio
-                        </label>
-                        <textarea
+                    <CollapsibleSection
+                        title="Personal Bio"
+                        icon={FaUser}
+                        isOpen={openSections.bio}
+                        onToggle={() => toggleSection('bio')}
+                    >
+                        <AppleInput
+                            label="Bio"
                             value={about.bio || ''}
                             onChange={(e) => setAbout(prev => ({ ...prev, bio: e.target.value }))}
-                            className="w-full bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Tell your story in a few sentences..."
                             rows={4}
                         />
-                    </div>
+                    </CollapsibleSection>
 
                     {/* Images Section */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-200 mb-2">
-                            Images
-                        </label>
-                        <div className="space-y-4">
+                    <CollapsibleSection
+                        title="Images"
+                        icon={FaImage}
+                        isOpen={openSections.images}
+                        onToggle={() => toggleSection('images')}
+                        count={Object.values(about.images).filter(img => img && typeof img === 'string' && img.trim() !== '').length}
+                    >
+                        <div className="space-y-6">
                             <div className="flex gap-4">
                                 <select
                                     value={selectedImageType}
                                     onChange={(e) => setSelectedImageType(e.target.value)}
-                                    className="bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="bg-white/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400/50 dark:focus:ring-slate-500/50 focus:border-slate-400 dark:focus:border-slate-500 transition-all duration-200"
                                 >
                                     <option value="profile">Profile Image</option>
                                     <option value="aboutMe">About Me Image</option>
                                     <option value="background">Background Image</option>
                                 </select>
-                                <input
-                                    type="text"
+                                <AppleInput
                                     value={newImageUrl}
                                     onChange={(e) => setNewImageUrl(e.target.value)}
                                     placeholder="Enter image URL"
-                                    className="flex-1 bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={updateImage}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                                >
+                                <AppleButton onClick={updateImage}>
                                     Update Image
-                                </button>
+                                </AppleButton>
                                 {hasImage(selectedImageType) && (
-                                    <button
-                                        type="button"
-                                        onClick={removeImage}
-                                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                                    >
+                                    <AppleButton onClick={removeImage} variant="danger">
                                         Remove
-                                    </button>
+                                    </AppleButton>
                                 )}
                             </div>
                             {hasImage(selectedImageType) && (
-                                <div className="relative w-32 h-32">
+                                <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-white/10">
                                     <img
                                         src={about.images[selectedImageType]}
                                         alt={`${selectedImageType} preview`}
-                                        className="object-contain w-full h-full"
+                                        className="object-cover w-full h-full"
                                         onError={(e) => {
                                             e.target.onerror = null;
                                             e.target.src = '';
@@ -494,19 +774,22 @@ const AboutManager = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </CollapsibleSection>
 
                     {/* Skills Section */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-200 mb-2">
-                            Skills
-                        </label>
-                        <div className="space-y-4">
+                    <CollapsibleSection
+                        title="Skills"
+                        icon={FaCog}
+                        isOpen={openSections.skills}
+                        onToggle={() => toggleSection('skills')}
+                        count={about.skillGroups.reduce((total, group) => total + group.items.length, 0)}
+                    >
+                        <div className="space-y-6">
                             <div className="flex gap-4">
                                 <select
                                     value={selectedSkillGroup}
                                     onChange={(e) => setSelectedSkillGroup(e.target.value)}
-                                    className="bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="bg-white/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400/50 dark:focus:ring-slate-500/50 focus:border-slate-400 dark:focus:border-slate-500 transition-all duration-200"
                                 >
                                     {about.skillGroups.map((group) => (
                                         <option key={group.title} value={group.title}>
@@ -514,103 +797,101 @@ const AboutManager = () => {
                                         </option>
                                     ))}
                                 </select>
-                                <input
-                                    type="text"
+                                <AppleInput
                                     value={newSkill}
                                     onChange={(e) => setNewSkill(e.target.value)}
                                     placeholder="Enter skill"
-                                    className="flex-1 bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={addSkill}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                                >
+                                <AppleButton onClick={addSkill}>
                                     Add Skill
-                                </button>
+                                </AppleButton>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {about.skillGroups.map((group, groupIndex) => (
-                                    <div key={group.title} className="space-y-2">
-                                        <h3 className="text-lg font-semibold text-white">{group.title}</h3>
+                                    <div key={group.title} className="space-y-3">
+                                        <h4 className="text-lg font-semibold text-slate-900 dark:text-white">{group.title}</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {group.items.map((skill, skillIndex) => (
-                                                <div
+                                                <motion.div
                                                     key={skillIndex}
-                                                    className="flex items-center gap-2 bg-[#2A2A2A] text-white px-3 py-1 rounded-full"
+                                                    className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-600"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    transition={{ duration: 0.2 }}
                                                 >
-                                                    <span>{skill}</span>
+                                                    <span className="text-sm">{skill}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeSkill(groupIndex, skillIndex)}
-                                                        className="text-red-500 hover:text-red-400"
+                                                        className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors ml-1"
                                                     >
                                                         ×
                                                     </button>
-                                                </div>
+                                                </motion.div>
                                             ))}
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </CollapsibleSection>
 
-                    {/* Tools Section */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-200 mb-2">
-                            Tools & Technologies
-                        </label>
-                        <div className="space-y-4">
+                    {/* AI Tools Section */}
+                    <CollapsibleSection
+                        title="AI Tools & Technologies"
+                        icon={FaRobot}
+                        isOpen={openSections.aiTools}
+                        onToggle={() => toggleSection('aiTools')}
+                        count={about.aiTools.length}
+                    >
+                        <div className="space-y-6">
                             <div className="flex gap-4">
-                                <input
-                                    type="text"
-                                    value={newTool}
-                                    onChange={(e) => setNewTool(e.target.value)}
-                                    placeholder="Enter tool"
-                                    className="flex-1 bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                <AppleInput
+                                    value={newAiTool}
+                                    onChange={(e) => setNewAiTool(e.target.value)}
+                                    placeholder="Enter AI tool or technology"
+                                    className="flex-1"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={addTool}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                                >
-                                    Add Tool
-                                </button>
+                                <AppleButton onClick={addAiTool}>
+                                    Add AI Tool
+                                </AppleButton>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                {about.tools.map((tool, index) => (
-                                    <div
+                                {about.aiTools.map((aiTool, index) => (
+                                    <motion.div
                                         key={index}
-                                        className="flex items-center gap-2 bg-[#2A2A2A] text-white px-3 py-1 rounded-full"
+                                        className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-600"
+                                        whileHover={{ scale: 1.05 }}
+                                        transition={{ duration: 0.2 }}
                                     >
-                                        <span>{tool}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeTool(index)}
-                                            className="text-red-500 hover:text-red-400"
-                                        >
+                                        <span className="text-sm">{aiTool}</span>
+                            <button
+                                type="button"
+                                            onClick={() => removeAiTool(index)}
+                                            className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors ml-1"
+                            >
                                             ×
-                                        </button>
-                                    </div>
+                            </button>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </CollapsibleSection>
 
                     {/* Experience Section */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <label className="block text-sm font-medium text-gray-200">
-                                Experience
-                            </label>
-                            <button
-                                type="button"
-                                onClick={addExperience}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                            >
-                                Add Experience
-                            </button>
+                    <CollapsibleSection
+                        title="Work Experience"
+                        icon={FaBriefcase}
+                        isOpen={openSections.experience}
+                        onToggle={() => toggleSection('experience')}
+                        count={about.experience.length}
+                    >
+                        <div className="space-y-4">
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addExperience}>
+                                    <FaPlus className="mr-2" />
+                                    Add Experience
+                                </AppleButton>
                         </div>
                         <DndContext
                             sensors={sensors}
@@ -635,172 +916,129 @@ const AboutManager = () => {
                             </SortableContext>
                         </DndContext>
                     </div>
+                    </CollapsibleSection>
 
                     {/* Education Section */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <label className="block text-sm font-medium text-gray-200">
-                                Education
-                            </label>
-                            <button
-                                type="button"
-                                onClick={addEducation}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                            >
+                    <CollapsibleSection
+                        title="Education"
+                        icon={FaGraduationCap}
+                        isOpen={openSections.education}
+                        onToggle={() => toggleSection('education')}
+                        count={about.education.length}
+                    >
+                        <div className="space-y-4">
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addEducation}>
+                                    <FaPlus className="mr-2" />
                                 Add Education
-                            </button>
+                                </AppleButton>
                         </div>
                         <div className="space-y-4">
                             {about.education.map((edu, index) => (
-                                <div key={index} className="bg-[#2A2A2A] p-4 rounded-lg space-y-4">
-                                    <div className="flex justify-between">
-                                        <h3 className="text-lg font-semibold text-white">Education {index + 1}</h3>
-                                        <button
-                                            type="button"
+                                    <motion.div 
+                                        key={index} 
+                                        className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md"
+                                        whileHover={{ scale: 1.02 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Education {index + 1}</h3>
+                                            <AppleButton
                                             onClick={() => removeEducation(index)}
-                                            className="text-red-500 hover:text-red-400"
+                                                variant="danger"
+                                                size="sm"
                                         >
-                                            Remove
-                                        </button>
+                                                <FaTrash />
+                                            </AppleButton>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
+                                            <AppleInput
+                                                label="Degree"
                                             value={edu.degree}
                                             onChange={(e) => updateEducation(index, 'degree', e.target.value)}
-                                            placeholder="Degree"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="e.g., Bachelor of Science"
                                         />
-                                        <input
-                                            type="text"
+                                            <AppleInput
+                                                label="School"
                                             value={edu.school}
                                             onChange={(e) => updateEducation(index, 'school', e.target.value)}
-                                            placeholder="School"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="e.g., Stanford University"
                                         />
-                                        <input
-                                            type="text"
+                                            <AppleInput
+                                                label="Period"
                                             value={edu.period}
                                             onChange={(e) => updateEducation(index, 'period', e.target.value)}
-                                            placeholder="Period"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="e.g., 2020 - 2024"
                                         />
-                                        <textarea
+                                        </div>
+                                        <AppleInput
+                                            label="Description"
                                             value={edu.description}
                                             onChange={(e) => updateEducation(index, 'description', e.target.value)}
-                                            placeholder="Description"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Additional details about your education..."
                                             rows={3}
                                         />
-                                    </div>
-                                </div>
+                                    </motion.div>
                             ))}
                         </div>
                     </div>
+                    </CollapsibleSection>
 
                     {/* Achievements Section */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <label className="block text-sm font-medium text-gray-200">
-                                Achievements
-                            </label>
-                            <button
-                                type="button"
-                                onClick={addAchievement}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                            >
-                                Add Achievement
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            {about.achievements.map((achievement, index) => (
-                                <div key={index} className="bg-[#2A2A2A] p-4 rounded-lg space-y-4">
-                                    <div className="flex justify-between">
-                                        <h3 className="text-lg font-semibold text-white">Achievement {index + 1}</h3>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeAchievement(index)}
-                                            className="text-red-500 hover:text-red-400"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            value={achievement.title}
-                                            onChange={(e) => updateAchievement(index, 'title', e.target.value)}
-                                            placeholder="Achievement Title"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={achievement.category}
-                                            onChange={(e) => updateAchievement(index, 'category', e.target.value)}
-                                            placeholder="Category (e.g., Hackathon, Sports, Organization)"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={achievement.date}
-                                            onChange={(e) => updateAchievement(index, 'date', e.target.value)}
-                                            placeholder="Date (e.g., March 2024)"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={achievement.organization}
-                                            onChange={(e) => updateAchievement(index, 'organization', e.target.value)}
-                                            placeholder="Organization"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={achievement.position}
-                                            onChange={(e) => updateAchievement(index, 'position', e.target.value)}
-                                            placeholder="Position/Role"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={achievement.location}
-                                            onChange={(e) => updateAchievement(index, 'location', e.target.value)}
-                                            placeholder="Location"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="url"
-                                            value={achievement.image}
-                                            onChange={(e) => updateAchievement(index, 'image', e.target.value)}
-                                            placeholder="Image URL"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="url"
-                                            value={achievement.link}
-                                            onChange={(e) => updateAchievement(index, 'link', e.target.value)}
-                                            placeholder="Link URL (optional)"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <textarea
-                                        value={achievement.description}
-                                        onChange={(e) => updateAchievement(index, 'description', e.target.value)}
-                                        placeholder="Description of the achievement"
-                                        className="w-full bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        rows={3}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-blue-500 to-teal-500 text-white py-3 rounded-lg hover:from-blue-600 hover:to-teal-600 transition-all duration-300"
+                    <CollapsibleSection
+                        title="Achievements"
+                        icon={FaTrophy}
+                        isOpen={openSections.achievements}
+                        onToggle={() => toggleSection('achievements')}
+                        count={about.achievements.length}
                     >
-                        Save Changes
-                    </button>
+                        <div className="space-y-4">
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addAchievement}>
+                                    <FaPlus className="mr-2" />
+                                Add Achievement
+                                </AppleButton>
+                        </div>
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={about.achievements.map((_, index) => `achievement-${index}`)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                <div className="space-y-4">
+                                    {about.achievements.map((achievement, index) => (
+                                        <SortableAchievementItem
+                                            key={`achievement-${index}`}
+                                            achievement={achievement}
+                                            index={index}
+                                            updateAchievement={updateAchievement}
+                                            removeAchievement={removeAchievement}
+                                        />
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                    </div>
+                    </CollapsibleSection>
+
+                    {/* Save Button */}
+                    <motion.div 
+                        className="pt-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                        <AppleButton
+                        type="submit"
+                            size="lg"
+                            className="w-full bg-gradient-to-r from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 hover:from-slate-800 hover:to-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-800 text-white font-semibold py-4 text-lg"
+                    >
+                            Save All Changes
+                        </AppleButton>
+                    </motion.div>
                 </form>
             </div>
         </div>
