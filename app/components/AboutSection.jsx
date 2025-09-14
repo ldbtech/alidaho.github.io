@@ -38,6 +38,7 @@ const AboutSection = () => {
             bio: data.bio || '',
             images: {
               profile: data.images?.profile || '',
+              aboutMe: data.images?.aboutMe || '',
               background: data.images?.background || '',
               additional: data.images?.additional || []
             },
@@ -60,6 +61,7 @@ const AboutSection = () => {
             bio: '',
             images: {
               profile: '',
+              aboutMe: '',
               background: '',
               additional: []
             },
@@ -116,10 +118,10 @@ const AboutSection = () => {
           className="col-span-4"
         >
           <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] mx-auto">
-            {content.images.profile && !imageError ? (
+            {content.images.aboutMe && !imageError ? (
               <Image
-                src={content.images.profile}
-                alt="Profile"
+                src={content.images.aboutMe}
+                alt="About Me"
                 className="rounded-full object-cover"
                 fill
                 priority

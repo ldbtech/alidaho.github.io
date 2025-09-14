@@ -9,6 +9,7 @@ const defaultAboutState = {
     bio: '',
     images: {
         profile: '',
+        aboutMe: '',
         background: '',
         additional: []
     },
@@ -51,6 +52,7 @@ const AboutManager = () => {
                         ...defaultAboutState.images,
                         ...(data.images || {}),
                         profile: data.images?.profile || defaultAboutState.images.profile,
+                        aboutMe: data.images?.aboutMe || defaultAboutState.images.aboutMe,
                         background: data.images?.background || defaultAboutState.images.background,
                         additional: data.images?.additional || defaultAboutState.images.additional
                     },
@@ -285,6 +287,7 @@ const AboutManager = () => {
                                     className="bg-[#2A2A2A] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="profile">Profile Image</option>
+                                    <option value="aboutMe">About Me Image</option>
                                     <option value="background">Background Image</option>
                                 </select>
                                 <input
