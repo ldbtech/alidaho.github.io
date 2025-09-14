@@ -47,20 +47,51 @@ The 404 error was caused by GitHub Pages configuration being used for Vercel dep
 
 ## Custom Domain Configuration (hellodaho.com)
 
-1. **In Vercel Dashboard:**
-   - Go to your project settings
-   - Navigate to "Domains" section
-   - Add `hellodaho.com` as a custom domain
-   - Add `www.hellodaho.com` as well (optional but recommended)
+### ⚠️ Important: Use Vercel, NOT GitHub Pages
 
-2. **DNS Configuration:**
-   - Add a CNAME record pointing `hellodaho.com` to `cname.vercel-dns.com`
-   - Add a CNAME record pointing `www.hellodaho.com` to `cname.vercel-dns.com`
-   - Or use A records pointing to Vercel's IP addresses
+**Your domain should be configured in Vercel, not GitHub Pages!**
 
-3. **SSL Certificate:**
-   - Vercel automatically provides SSL certificates for custom domains
-   - Your site will be accessible via HTTPS
+### Step 1: Remove from GitHub Pages
+1. Go to your GitHub repository settings
+2. Navigate to **Pages** section  
+3. **Remove** `hellodaho.com` from custom domain settings
+4. This stops the DNS check errors
+
+### Step 2: Configure in Vercel Dashboard
+1. Go to your **Vercel Dashboard**
+2. Select your project
+3. Go to **Settings** → **Domains**
+4. Add `hellodaho.com` as a custom domain
+5. Add `www.hellodaho.com` (optional but recommended)
+
+### Step 3: Update DNS Records
+In your domain registrar, add these DNS records:
+
+**Option A: CNAME Records (Recommended)**
+```
+Type: CNAME
+Name: hellodaho.com
+Value: cname.vercel-dns.com
+
+Type: CNAME  
+Name: www.hellodaho.com
+Value: cname.vercel-dns.com
+```
+
+**Option B: A Records**
+```
+Type: A
+Name: hellodaho.com
+Value: 76.76.19.61
+
+Type: A
+Name: www.hellodaho.com  
+Value: 76.76.19.61
+```
+
+### Step 4: SSL Certificate
+- Vercel automatically provides SSL certificates for custom domains
+- Your site will be accessible via HTTPS
 
 ## What Was Fixed
 
