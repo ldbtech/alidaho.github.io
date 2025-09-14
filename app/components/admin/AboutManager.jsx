@@ -39,6 +39,7 @@ const defaultAboutState = {
     ],
     experience: [],
     education: [],
+    achievements: [],
     tools: []
 };
 
@@ -313,6 +314,45 @@ const AboutManager = () => {
         setAbout(prev => ({
             ...prev,
             education: prev.education.filter((_, i) => i !== index)
+        }));
+    };
+
+    const addAchievement = () => {
+        setAbout(prev => ({
+            ...prev,
+            achievements: [
+                ...prev.achievements,
+                { 
+                    title: '', 
+                    category: '', 
+                    date: '', 
+                    description: '', 
+                    organization: '', 
+                    position: '', 
+                    location: '', 
+                    image: '', 
+                    link: '' 
+                }
+            ]
+        }));
+    };
+
+    const updateAchievement = (index, field, value) => {
+        setAbout(prev => ({
+            ...prev,
+            achievements: prev.achievements.map((achievement, i) => {
+                if (i === index) {
+                    return { ...achievement, [field]: value };
+                }
+                return achievement;
+            })
+        }));
+    };
+
+    const removeAchievement = (index) => {
+        setAbout(prev => ({
+            ...prev,
+            achievements: prev.achievements.filter((_, i) => i !== index)
         }));
     };
 
@@ -653,6 +693,103 @@ const AboutManager = () => {
                                             rows={3}
                                         />
                                     </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Achievements Section */}
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <label className="block text-sm font-medium text-gray-200">
+                                Achievements
+                            </label>
+                            <button
+                                type="button"
+                                onClick={addAchievement}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                            >
+                                Add Achievement
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            {about.achievements.map((achievement, index) => (
+                                <div key={index} className="bg-[#2A2A2A] p-4 rounded-lg space-y-4">
+                                    <div className="flex justify-between">
+                                        <h3 className="text-lg font-semibold text-white">Achievement {index + 1}</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeAchievement(index)}
+                                            className="text-red-500 hover:text-red-400"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input
+                                            type="text"
+                                            value={achievement.title}
+                                            onChange={(e) => updateAchievement(index, 'title', e.target.value)}
+                                            placeholder="Achievement Title"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={achievement.category}
+                                            onChange={(e) => updateAchievement(index, 'category', e.target.value)}
+                                            placeholder="Category (e.g., Hackathon, Sports, Organization)"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={achievement.date}
+                                            onChange={(e) => updateAchievement(index, 'date', e.target.value)}
+                                            placeholder="Date (e.g., March 2024)"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={achievement.organization}
+                                            onChange={(e) => updateAchievement(index, 'organization', e.target.value)}
+                                            placeholder="Organization"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={achievement.position}
+                                            onChange={(e) => updateAchievement(index, 'position', e.target.value)}
+                                            placeholder="Position/Role"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={achievement.location}
+                                            onChange={(e) => updateAchievement(index, 'location', e.target.value)}
+                                            placeholder="Location"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="url"
+                                            value={achievement.image}
+                                            onChange={(e) => updateAchievement(index, 'image', e.target.value)}
+                                            placeholder="Image URL"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="url"
+                                            value={achievement.link}
+                                            onChange={(e) => updateAchievement(index, 'link', e.target.value)}
+                                            placeholder="Link URL (optional)"
+                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <textarea
+                                        value={achievement.description}
+                                        onChange={(e) => updateAchievement(index, 'description', e.target.value)}
+                                        placeholder="Description of the achievement"
+                                        className="w-full bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        rows={3}
+                                    />
                                 </div>
                             ))}
                         </div>

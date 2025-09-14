@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FaCode, FaServer, FaDatabase, FaTools } from "react-icons/fa";
+import { FaCode, FaServer, FaDatabase, FaTools, FaTrophy } from "react-icons/fa";
 import { fetchData } from "../services/firebase";
 
 const defaultSkillGroups = [
@@ -60,6 +60,7 @@ const AboutSection = () => {
     { id: "experience", label: "Experience", icon: <FaServer className="text-xl" /> },
     { id: "education", label: "Education", icon: <FaDatabase className="text-xl" /> },
     { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
+    { id: "achievements", label: "Achievements", icon: <FaTrophy className="text-xl" /> },
     { id: "tools", label: "Tools", icon: <FaTools className="text-xl" /> },
   ];
 
@@ -81,6 +82,7 @@ const AboutSection = () => {
             skillGroups: Array.isArray(data.skillGroups) ? data.skillGroups : defaultSkillGroups,
             experience: Array.isArray(data.experience) ? data.experience : [],
             education: Array.isArray(data.education) ? data.education : [],
+            achievements: Array.isArray(data.achievements) ? data.achievements : [],
             tools: Array.isArray(data.tools) ? data.tools : []
           };
 
@@ -104,6 +106,7 @@ const AboutSection = () => {
             skillGroups: defaultSkillGroups,
             experience: [],
             education: [],
+            achievements: [],
             tools: []
           });
         }
@@ -325,6 +328,100 @@ const AboutSection = () => {
                       </div>
                     </div>
                   ))}
+              </div>
+            )}
+            {activeTab === "achievements" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {content.achievements.map((achievement, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-surface rounded-apple-lg p-6 shadow-apple-light hover:shadow-apple transition-apple group"
+                  >
+                    {/* Achievement Image */}
+                    {achievement.image && (
+                      <div className="relative w-full h-48 mb-4 rounded-apple overflow-hidden">
+                        <Image
+                          src={achievement.image}
+                          alt={achievement.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-apple"
+                          unoptimized
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Achievement Content */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <FaTrophy className="text-accent text-lg" />
+                        <h3 className="text-xl font-semibold text-primary">{achievement.title}</h3>
+                      </div>
+                      
+                      {achievement.category && (
+                        <span className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-apple text-sm font-medium">
+                          {achievement.category}
+                        </span>
+                      )}
+                      
+                      {achievement.date && (
+                        <p className="text-secondary text-sm">
+                          {achievement.date}
+                        </p>
+                      )}
+                      
+                      {achievement.description && (
+                        <p className="text-secondary text-sm leading-relaxed">
+                          {achievement.description}
+                        </p>
+                      )}
+                      
+                      {achievement.organization && (
+                        <p className="text-tertiary text-sm">
+                          <span className="font-medium">Organization:</span> {achievement.organization}
+                        </p>
+                      )}
+                      
+                      {achievement.position && (
+                        <p className="text-tertiary text-sm">
+                          <span className="font-medium">Position:</span> {achievement.position}
+                        </p>
+                      )}
+                      
+                      {achievement.location && (
+                        <p className="text-tertiary text-sm">
+                          <span className="font-medium">Location:</span> {achievement.location}
+                        </p>
+                      )}
+                      
+                      {achievement.link && (
+                        <div className="pt-2">
+                          <a
+                            href={achievement.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-apple text-sm font-medium transition-apple"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Details
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {content.achievements.length === 0 && (
+                  <div className="col-span-full text-center py-12">
+                    <FaTrophy className="text-6xl text-tertiary mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-primary mb-2">No Achievements Yet</h3>
+                    <p className="text-secondary">Add your achievements in the admin panel to showcase your accomplishments!</p>
+                  </div>
+                )}
               </div>
             )}
             {activeTab === "tools" && (
