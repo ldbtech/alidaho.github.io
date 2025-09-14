@@ -2,7 +2,7 @@
 
 import HeroSections from "./components/HeroSections";
 import Navbar from "./components/Navbar";
-import AchievementsSection from "./components/AchievementsSection";
+import ExtracurricularAndAchievementSection from "./components/ExtracurricularAndAchievementSection";
 import AboutSection from "./components/AboutSection";
 import ProjectsSection from "./components/ProjectsSection";
 import EmailSection from "./components/EmailSection";
@@ -15,7 +15,7 @@ export default function Home() {
       <div className="w-full">
         <HeroSections />
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <AchievementsSection />
+          <ExtracurricularAndAchievementSection />
           <AboutSection />
           <ProjectsSection />
           <EmailSection />

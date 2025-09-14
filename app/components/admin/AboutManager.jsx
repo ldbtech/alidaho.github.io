@@ -17,7 +17,8 @@ import {
   FaCog,
   FaRobot,
   FaCode,
-  FaLanguage
+  FaLanguage,
+  FaGlobe
 } from 'react-icons/fa';
 import { fetchData, saveAbout } from '../../services/firebase';
 import {
@@ -59,7 +60,12 @@ const defaultAboutState = {
     experience: [],
     education: [],
     achievements: [],
-    aiTools: []
+    aiTools: [],
+    languages: [
+        { code: 'en', name: 'English', flag: '🇺🇸', isActive: true, isDefault: true },
+        { code: 'es', name: 'Español', flag: '🇪🇸', isActive: true, isDefault: false },
+        { code: 'fr', name: 'Français', flag: '🇫🇷', isActive: true, isDefault: false }
+    ]
 };
 
 // Collapsible Section Component
@@ -244,6 +250,12 @@ const SortableExperienceItem = ({ exp, index, updateExperience, removeExperience
                         onChange={(e) => updateExperience(index, 'period', e.target.value)}
                         placeholder="e.g., March 2024 - August 2024"
                     />
+                <AppleInput
+                    label="Company Logo URL"
+                        value={exp.logo || ''}
+                        onChange={(e) => updateExperience(index, 'logo', e.target.value)}
+                        placeholder="e.g., https://example.com/logo.png"
+                />
             </div>
             
             <AppleInput
@@ -391,7 +403,8 @@ const AboutManager = () => {
         aiTools: false,
         experience: false,
         education: false,
-        achievements: false
+        achievements: false,
+        languages: false
     });
 
     // Drag and drop sensors
@@ -568,7 +581,7 @@ const AboutManager = () => {
             ...prev,
             experience: [
                 ...prev.experience,
-                { title: '', company: '', period: '', description: '' }
+                { title: '', company: '', period: '', description: '', logo: '' }
             ]
         }));
     };
@@ -665,6 +678,46 @@ const AboutManager = () => {
                 }
                 return edu;
             })
+        }));
+    };
+
+    // Language management functions
+    const addLanguage = () => {
+        setAbout(prev => ({
+            ...prev,
+            languages: [
+                ...prev.languages,
+                { code: '', name: '', flag: '', isActive: true, isDefault: false }
+            ]
+        }));
+    };
+
+    const updateLanguage = (index, field, value) => {
+        setAbout(prev => ({
+            ...prev,
+            languages: prev.languages.map((lang, i) => {
+                if (i === index) {
+                    return { ...lang, [field]: value };
+                }
+                return lang;
+            })
+        }));
+    };
+
+    const removeLanguage = (index) => {
+        setAbout(prev => ({
+            ...prev,
+            languages: prev.languages.filter((_, i) => i !== index)
+        }));
+    };
+
+    const setDefaultLanguage = (index) => {
+        setAbout(prev => ({
+            ...prev,
+            languages: prev.languages.map((lang, i) => ({
+                ...lang,
+                isDefault: i === index
+            }))
         }));
     };
 
@@ -1238,7 +1291,7 @@ const AboutManager = () => {
 
                     {/* Achievements Section */}
                     <CollapsibleSection
-                        title="Achievements"
+                        title="Extracurricular and Achievement"
                         icon={FaTrophy}
                         isOpen={openSections.achievements}
                         onToggle={() => toggleSection('achievements')}
@@ -1274,6 +1327,96 @@ const AboutManager = () => {
                             </SortableContext>
                         </DndContext>
                     </div>
+                    </CollapsibleSection>
+
+                    {/* Languages Section */}
+                    <CollapsibleSection
+                        title="Website Languages"
+                        icon={FaGlobe}
+                        isOpen={openSections.languages}
+                        onToggle={() => toggleSection('languages')}
+                        count={about.languages.length}
+                    >
+                        <div className="space-y-4">
+                            <div className="flex justify-end">
+                                <AppleButton onClick={addLanguage}>
+                                    <FaPlus className="mr-2" />
+                                    Add Language
+                                </AppleButton>
+                            </div>
+                            <div className="space-y-4">
+                                {about.languages.map((lang, index) => (
+                                    <motion.div 
+                                        key={index} 
+                                        className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md"
+                                        whileHover={{ scale: 1.02 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Language {index + 1}</h3>
+                                            <div className="flex gap-2">
+                                                {!lang.isDefault && (
+                                                    <AppleButton
+                                                        onClick={() => setDefaultLanguage(index)}
+                                                        size="sm"
+                                                        variant="secondary"
+                                                    >
+                                                        Set Default
+                                                    </AppleButton>
+                                                )}
+                                                <AppleButton
+                                                    onClick={() => removeLanguage(index)}
+                                                    variant="danger"
+                                                    size="sm"
+                                                >
+                                                    <FaTrash />
+                                                </AppleButton>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <AppleInput
+                                                label="Language Code"
+                                                value={lang.code}
+                                                onChange={(e) => updateLanguage(index, 'code', e.target.value)}
+                                                placeholder="e.g., en, es, fr"
+                                            />
+                                            <AppleInput
+                                                label="Language Name"
+                                                value={lang.name}
+                                                onChange={(e) => updateLanguage(index, 'name', e.target.value)}
+                                                placeholder="e.g., English, Español"
+                                            />
+                                            <AppleInput
+                                                label="Flag Emoji"
+                                                value={lang.flag}
+                                                onChange={(e) => updateLanguage(index, 'flag', e.target.value)}
+                                                placeholder="e.g., 🇺🇸, 🇪🇸"
+                                            />
+                                            <div className="flex items-center gap-4">
+                                                <label className="flex items-center gap-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={lang.isActive}
+                                                        onChange={(e) => updateLanguage(index, 'isActive', e.target.checked)}
+                                                        className="rounded"
+                                                    />
+                                                    <span className="text-sm text-slate-700 dark:text-slate-300">Active</span>
+                                                </label>
+                                                <label className="flex items-center gap-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={lang.isDefault}
+                                                        onChange={(e) => setDefaultLanguage(index)}
+                                                        className="rounded"
+                                                    />
+                                                    <span className="text-sm text-slate-700 dark:text-slate-300">Default</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
                     </CollapsibleSection>
 
                     {/* Save Button */}

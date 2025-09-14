@@ -8,27 +8,30 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { fetchProfile } from "../services/firebase";
 import ThemeToggle from "./ThemeToggle";
-
-const navLinks = [
-    {
-        title: "About",
-        path: "#about",
-    },
-    {
-        title: "Projects",
-        path: "#projects",
-    },
-    {
-        title: "Thoughts",
-        path: "/thoughts",
-    },
-    {
-        title: "Contact",
-        path: "#contact",
-    },
-];
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const Navbar = () => {
+    const { t } = useLanguage();
+    
+    const navLinks = [
+        {
+            title: typeof t('about', 'About') === 'string' ? t('about', 'About') : 'About',
+            path: "#about",
+        },
+        {
+            title: typeof t('projects', 'Projects') === 'string' ? t('projects', 'Projects') : 'Projects',
+            path: "#projects",
+        },
+        {
+            title: typeof t('thoughts', 'Thoughts') === 'string' ? t('thoughts', 'Thoughts') : 'Thoughts',
+            path: "/thoughts",
+        },
+        {
+            title: typeof t('contact', 'Contact') === 'string' ? t('contact', 'Contact') : 'Contact',
+            path: "#contact",
+        },
+    ];
     const [navbarOpen, setNavbarOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [profile, setProfile] = useState(null);
@@ -133,13 +136,22 @@ const Navbar = () => {
                                 </motion.li>
                             ))}
                         </ul>
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: navLinks.length * 0.1 }}
-                        >
-                            <ThemeToggle />
-                        </motion.div>
+                        <div className="flex items-center gap-3">
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: navLinks.length * 0.1 }}
+                            >
+                                <LanguageSwitcher />
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: navLinks.length * 0.1 + 0.1 }}
+                            >
+                                <ThemeToggle />
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </div>

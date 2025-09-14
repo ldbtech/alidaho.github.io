@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaCode, FaServer, FaDatabase, FaTrophy, FaRobot } from "react-icons/fa";
 import { fetchData } from "../services/firebase";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const defaultSkillGroups = [
   { title: 'Frontend Development', items: [] },
@@ -15,6 +16,7 @@ const defaultSkillGroups = [
 ];
 
 const AboutSection = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("experience");
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,12 +60,12 @@ const AboutSection = () => {
   };
 
   const tabs = [
-    { id: "experience", label: "Experience", icon: <FaServer className="text-xl" /> },
-    { id: "education", label: "Education", icon: <FaDatabase className="text-xl" /> },
-    { id: "achievements", label: "Achievements", icon: <FaTrophy className="text-xl" /> },
-    { id: "programmingLanguages", label: "Programming", icon: <FaCode className="text-xl" /> },
-    { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
-    { id: "aiTools", label: "AI Tools", icon: <FaRobot className="text-xl" /> },
+    { id: "experience", label: typeof t('about.experience', 'Experience') === 'string' ? t('about.experience', 'Experience') : 'Experience', icon: <FaServer className="text-xl" /> },
+    { id: "education", label: typeof t('about.education', 'Education') === 'string' ? t('about.education', 'Education') : 'Education', icon: <FaDatabase className="text-xl" /> },
+    { id: "achievements", label: typeof t('about.extracurricularAndAchievement', 'Extracurricular and Achievement') === 'string' ? t('about.extracurricularAndAchievement', 'Extracurricular and Achievement') : 'Extracurricular and Achievement', icon: <FaTrophy className="text-xl" /> },
+    { id: "programmingLanguages", label: typeof t('about.programming', 'Programming') === 'string' ? t('about.programming', 'Programming') : 'Programming', icon: <FaCode className="text-xl" /> },
+    { id: "skills", label: typeof t('about.skills', 'Skills') === 'string' ? t('about.skills', 'Skills') : 'Skills', icon: <FaCode className="text-xl" /> },
+    { id: "aiTools", label: typeof t('about.aiTools', 'AI Tools') === 'string' ? t('about.aiTools', 'AI Tools') : 'AI Tools', icon: <FaRobot className="text-xl" /> },
   ];
 
   useEffect(() => {
@@ -186,7 +188,15 @@ const AboutSection = () => {
           className="space-y-4"
         >
           <h2 className="text-5xl font-bold text-primary">
-            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">Me</span>
+            {(() => {
+              const title = t('about.title', 'About Me');
+              const titleParts = typeof title === 'string' ? title.split(' ') : ['About', 'Me'];
+              return (
+                <>
+                  {titleParts[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">{titleParts[1] || 'Me'}</span>
+                </>
+              );
+            })()}
           </h2>
           <p className="text-secondary text-xl max-w-3xl mx-auto leading-relaxed">
             {content.bio}
@@ -278,9 +288,28 @@ const AboutSection = () => {
                   .map((exp, index) => (
                     <div key={index} className="bg-surface rounded-apple p-6 shadow-apple-light">
                       <div className="space-y-3">
-                        <h3 className="text-2xl font-semibold text-primary">{exp.title}</h3>
-                        <p className="text-accent font-medium text-lg">{exp.company}</p>
-                        <p className="text-tertiary text-sm font-medium">{exp.period}</p>
+                        <div className="flex items-start gap-4">
+                          {exp.logo && (
+                            <div className="flex-shrink-0">
+                              <Image
+                                src={exp.logo}
+                                alt={`${exp.company} logo`}
+                                width={48}
+                                height={48}
+                                className="rounded-lg object-contain"
+                                unoptimized
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-2xl font-semibold text-primary">{exp.title}</h3>
+                            <p className="text-accent font-medium text-lg">{exp.company}</p>
+                            <p className="text-tertiary text-sm font-medium">{exp.period}</p>
+                          </div>
+                        </div>
                         <div className="pt-2">
                           {renderDescription(exp.description)}
                         </div>
@@ -366,7 +395,7 @@ const AboutSection = () => {
                           {/* Coursework Section - Only show if courses exist */}
                           {edu.courses && edu.courses.length > 0 && (
                             <div className="space-y-4">
-                              <h4 className="text-lg font-semibold text-primary">Relevant Coursework</h4>
+                              <h4 className="text-lg font-semibold text-primary">{typeof t('about.relevantCoursework', 'Relevant Coursework') === 'string' ? t('about.relevantCoursework', 'Relevant Coursework') : 'Relevant Coursework'}</h4>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {edu.courses.map((course, courseIndex) => (
                                   <div
@@ -396,9 +425,9 @@ const AboutSection = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-semibold text-primary mb-2">No Education Added Yet</h3>
+                    <h3 className="text-xl font-semibold text-primary mb-2">{typeof t('about.noEducation', 'No Education Added Yet') === 'string' ? t('about.noEducation', 'No Education Added Yet') : 'No Education Added Yet'}</h3>
                     <p className="text-secondary">
-                      Add your educational background in the admin panel to showcase your academic achievements!
+                      {typeof t('about.noEducationDesc', 'Add your educational background in the admin panel to showcase your academic achievements!') === 'string' ? t('about.noEducationDesc', 'Add your educational background in the admin panel to showcase your academic achievements!') : 'Add your educational background in the admin panel to showcase your academic achievements!'}
                     </p>
                   </motion.div>
                 )}
@@ -492,8 +521,8 @@ const AboutSection = () => {
                 {content.achievements.length === 0 && (
                   <div className="col-span-full text-center py-12">
                     <FaTrophy className="text-6xl text-tertiary mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-primary mb-2">No Achievements Yet</h3>
-                    <p className="text-secondary">Add your achievements in the admin panel to showcase your accomplishments!</p>
+                    <h3 className="text-xl font-semibold text-primary mb-2">{typeof t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') === 'string' ? t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') : 'No Extracurricular and Achievement Yet'}</h3>
+                    <p className="text-secondary">{typeof t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') === 'string' ? t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') : 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!'}</p>
                   </div>
                 )}
               </div>

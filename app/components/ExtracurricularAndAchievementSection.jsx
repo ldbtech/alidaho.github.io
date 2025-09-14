@@ -10,7 +10,7 @@ const AnimatedNumbers = dynamic(
     { ssr: false }
 );
 
-const AchievementsSection = () => {
+const ExtracurricularAndAchievementSection = () => {
     const [achievements, setAchievements] = useState([
         {
             id: 1,
@@ -94,4 +94,4 @@ const AchievementsSection = () => {
     );
 };
 
-export default AchievementsSection;
+export default ExtracurricularAndAchievementSection;
