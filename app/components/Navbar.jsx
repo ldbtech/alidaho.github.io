@@ -84,14 +84,14 @@ const Navbar = () => {
                     : "bg-transparent"
             }`}
         >
-            <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
                 <div className="flex items-center justify-between">
                     <Link
                         href={"/"}
                         className="flex items-center group"
                     >
                         {profile?.logo && !imageError ? (
-                            <div className="relative w-10 h-10 rounded-apple overflow-hidden group-hover:scale-105 transition-apple">
+                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-apple overflow-hidden group-hover:scale-105 transition-apple">
                                 <Image
                                     src={profile.logo}
                                     alt="Logo"
@@ -103,15 +103,15 @@ const Navbar = () => {
                                 />
                             </div>
                         ) : (
-                            <div className="w-10 h-10 rounded-apple bg-gradient-theme flex items-center justify-center group-hover:scale-105 transition-apple">
-                                <span className="text-lg font-semibold text-white">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-apple bg-gradient-theme flex items-center justify-center group-hover:scale-105 transition-apple">
+                                <span className="text-sm sm:text-lg font-semibold text-white">
                                     AD
                                 </span>
                             </div>
                         )}
                     </Link>
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden">
+                    <div className="lg:hidden">
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -123,8 +123,8 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        <ul className="flex items-center space-x-8">
+                    <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+                        <ul className="flex items-center space-x-4 xl:space-x-8">
                             {navLinks.map((link, index) => (
                                 <motion.li 
                                     key={index}
@@ -136,7 +136,7 @@ const Navbar = () => {
                                 </motion.li>
                             ))}
                         </ul>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 xl:gap-3">
                             <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -152,6 +152,12 @@ const Navbar = () => {
                                 <ThemeToggle />
                             </motion.div>
                         </div>
+                    </div>
+
+                    {/* Tablet Navigation - Show controls but hide nav links */}
+                    <div className="hidden md:flex lg:hidden items-center gap-3">
+                        <LanguageSwitcher />
+                        <ThemeToggle />
                     </div>
                 </div>
             </div>

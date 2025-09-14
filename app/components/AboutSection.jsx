@@ -156,13 +156,13 @@ const AboutSection = () => {
   }
 
   return (
-    <section className="py-24 space-y-16" id="about">
-      <div className="text-center space-y-6">
+    <section className="py-12 sm:py-16 lg:py-24 space-y-8 sm:space-y-12 lg:space-y-16" id="about">
+      <div className="text-center space-y-4 sm:space-y-6 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative w-32 h-32 mx-auto mb-8"
+          className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 mx-auto mb-6 sm:mb-8"
         >
           {content.images.aboutMe && !imageError ? (
             <Image
@@ -187,7 +187,7 @@ const AboutSection = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="space-y-4"
         >
-          <h2 className="text-5xl font-bold text-primary">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary">
             {(() => {
               const title = t('about.title', 'About Me');
               const titleParts = typeof title === 'string' ? title.split(' ') : ['About', 'Me'];
@@ -198,7 +198,7 @@ const AboutSection = () => {
               );
             })()}
           </h2>
-          <p className="text-secondary text-xl max-w-3xl mx-auto leading-relaxed">
+          <p className="text-secondary text-base sm:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
             {content.bio}
           </p>
         </motion.div>
@@ -210,24 +210,24 @@ const AboutSection = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="space-y-8"
       >
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-6 py-3 rounded-apple transition-apple ${
+              className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-apple transition-apple text-sm sm:text-base ${
                 activeTab === tab.id
                   ? "bg-accent text-white shadow-apple-light"
                   : "bg-surface-secondary text-secondary hover:bg-surface-tertiary"
               }`}
             >
-              {tab.icon}
+              <span className="text-lg sm:text-xl">{tab.icon}</span>
               <span className="font-medium">{tab.label}</span>
             </button>
           ))}
         </div>
         
-        <div className="bg-surface-secondary rounded-apple-lg p-8 shadow-apple-light">
+        <div className="bg-surface-secondary rounded-apple-lg p-4 sm:p-6 lg:p-8 shadow-apple-light mx-4 sm:mx-0">
             {activeTab === "skills" && (
               <div className="flex flex-wrap gap-3">
                 {content.skillGroups.map((group, index) => 
@@ -286,17 +286,17 @@ const AboutSection = () => {
                     return dateB - dateA;
                   })
                   .map((exp, index) => (
-                    <div key={index} className="bg-surface rounded-apple p-6 shadow-apple-light">
+                    <div key={index} className="bg-surface rounded-apple p-4 sm:p-6 shadow-apple-light">
                       <div className="space-y-3">
-                        <div className="flex items-start gap-4">
+                        <div className="flex items-start gap-3 sm:gap-4">
                           {exp.logo && (
                             <div className="flex-shrink-0">
                               <Image
                                 src={exp.logo}
                                 alt={`${exp.company} logo`}
-                                width={48}
-                                height={48}
-                                className="rounded-lg object-contain"
+                                width={40}
+                                height={40}
+                                className="rounded-lg object-contain sm:w-12 sm:h-12"
                                 unoptimized
                                 onError={(e) => {
                                   e.target.style.display = 'none';
@@ -305,9 +305,9 @@ const AboutSection = () => {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-2xl font-semibold text-primary">{exp.title}</h3>
-                            <p className="text-accent font-medium text-lg">{exp.company}</p>
-                            <p className="text-tertiary text-sm font-medium">{exp.period}</p>
+                            <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary">{exp.title}</h3>
+                            <p className="text-accent font-medium text-base sm:text-lg">{exp.company}</p>
+                            <p className="text-tertiary text-xs sm:text-sm font-medium">{exp.period}</p>
                           </div>
                         </div>
                         <div className="pt-2">

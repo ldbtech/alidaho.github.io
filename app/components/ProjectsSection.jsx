@@ -54,23 +54,23 @@ const ProjectsSection = () => {
   }
 
   return (
-    <section id="projects" className="py-20 bg-[#121212]">
+    <section id="projects" className="py-12 sm:py-16 lg:py-20 bg-[#121212]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             My <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">Projects</span>
           </h2>
-          <p className="text-[#ADB7BE] max-w-2xl mx-auto">
+          <p className="text-[#ADB7BE] max-w-2xl mx-auto text-sm sm:text-base px-4">
             Here are some of my recent projects. Each project is a unique piece of development, showcasing different skills and technologies.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
