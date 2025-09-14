@@ -177,7 +177,7 @@ const AboutSection = () => {
           className="space-y-4"
         >
           <h2 className="text-5xl font-bold text-primary">
-            About <span className="text-transparent bg-clip-text bg-gradient-theme">Me</span>
+            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">Me</span>
           </h2>
           <p className="text-secondary text-xl max-w-3xl mx-auto leading-relaxed">
             {content.bio}
