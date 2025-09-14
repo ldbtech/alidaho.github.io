@@ -7,6 +7,7 @@ import MenuOverlay from "./MenuOverlay";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { fetchProfile } from "../services/firebase";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
     {
@@ -73,72 +74,73 @@ const Navbar = () => {
         <motion.nav 
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`fixed mx-auto top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className={`fixed top-0 left-0 right-0 z-50 transition-apple ${
                 scrolled 
-                    ? "bg-[#121212] bg-opacity-95 backdrop-blur-sm border-b border-[#33353F]" 
+                    ? "bg-background/80 backdrop-blur-xl border-b border-separator" 
                     : "bg-transparent"
             }`}
         >
-            <div className="flex container lg:py-4 flex-wrap items-center justify-between mx-auto px-4 py-2">
-                <Link
-                    href={"/"}
-                    className="flex items-center"
-                >
-                    {profile?.logo && !imageError ? (
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition-colors duration-300">
-                            <Image
-                                src={profile.logo}
-                                alt="Logo"
-                                fill
-                                className="object-cover"
-                                priority
-                                onError={handleImageError}
-                                unoptimized
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
-                            <span className="text-xl font-bold text-white">
-                                AD
-                            </span>
-                        </div>
-                    )}
-                </Link>
-                <div className="mobile-menu block md:hidden">
-                    {!navbarOpen ? (
+            <div className="max-w-6xl mx-auto px-6 py-4">
+                <div className="flex items-center justify-between">
+                    <Link
+                        href={"/"}
+                        className="flex items-center group"
+                    >
+                        {profile?.logo && !imageError ? (
+                            <div className="relative w-10 h-10 rounded-apple overflow-hidden group-hover:scale-105 transition-apple">
+                                <Image
+                                    src={profile.logo}
+                                    alt="Logo"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    onError={handleImageError}
+                                    unoptimized
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-10 h-10 rounded-apple bg-gradient-theme flex items-center justify-center group-hover:scale-105 transition-apple">
+                                <span className="text-lg font-semibold text-white">
+                                    AD
+                                </span>
+                            </div>
+                        )}
+                    </Link>
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden">
                         <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setNavbarOpen(true)}
-                            className="flex items-center px-3 py-2 border rounded border-slate-200 text-slate-200 hover:text-white hover:border-white transition-colors duration-300"
+                            className="p-2 rounded-apple bg-surface-secondary hover:bg-surface-tertiary transition-apple"
                         >
-                            <Bars3Icon className="h-5 w-5" />
+                            <Bars3Icon className="h-5 w-5 text-primary" />
                         </motion.button>
-                    ) : (
-                        <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => setNavbarOpen(false)}
-                            className="flex items-center px-3 py-2 border rounded border-slate-200 text-slate-200 hover:text-white hover:border-white transition-colors duration-300"
+                    </div>
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center space-x-8">
+                        <ul className="flex items-center space-x-8">
+                            {navLinks.map((link, index) => (
+                                <motion.li 
+                                    key={index}
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                                >
+                                    <NavLink href={link.path} title={link.title} />
+                                </motion.li>
+                            ))}
+                        </ul>
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: navLinks.length * 0.1 }}
                         >
-                            <XMarkIcon className="h-5 w-5" />
-                        </motion.button>
-                    )}
-                </div>
-                <div className="menu hidden md:block md:w-auto" id="navbar">
-                    <ul className="flex p-4 md:p-0 md:flex-row md:space-x-8 mt-0">
-                        {navLinks.map((link, index) => (
-                            <motion.li 
-                                key={index}
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                            >
-                                <NavLink href={link.path} title={link.title} />
-                            </motion.li>
-                        ))}
-                    </ul>
+                            <ThemeToggle />
+                        </motion.div>
+                    </div>
                 </div>
             </div>
             {navbarOpen ? <MenuOverlay links={navLinks} /> : null}

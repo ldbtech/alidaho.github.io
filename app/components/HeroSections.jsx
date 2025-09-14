@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { fetchProfile } from '../services/firebase';
+import ResumePreview from './ResumePreview';
 
 const HeroSections = () => {
     const [profile, setProfile] = useState(null);
@@ -61,77 +62,97 @@ const HeroSections = () => {
     }
 
     return (
-        <section className="grid md:grid-cols-2 gap-4 items-center py-24">
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col gap-4"
-            >
-                <h1 className="text-4xl sm:text-5xl font-bold text-white">
-                    Hi, I&apos;m{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">
-                        {profile.name}
-                    </span>
-                </h1>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#ADB7BE]">
-                    <TypeAnimation
-                        sequence={[
-                            profile.title,
-                            1000,
-                            "Full Stack Developer",
-                            1000,
-                            "AI Enthusiast",
-                            1000,
-                        ]}
-                        wrapper="span"
-                        speed={50}
-                        repeat={Infinity}
-                    />
-                </h2>
-                <p className="text-[#ADB7BE] text-base sm:text-lg">
-                    {profile.bio}
-                </p>
+        <section className="min-h-screen flex items-center justify-center px-6">
+            <div className="max-w-6xl mx-auto text-center space-y-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="space-y-8"
+                >
+                    <div className="space-y-4">
+                        <h1 className="text-6xl md:text-8xl font-bold text-primary tracking-tight">
+                            {profile.name}
+                        </h1>
+                        <h2 className="text-2xl md:text-3xl text-secondary font-medium">
+                            <TypeAnimation
+                                sequence={[
+                                    profile.title,
+                                    2000,
+                                    "Full Stack Developer",
+                                    2000,
+                                    "AI Enthusiast",
+                                    2000,
+                                    "Problem Solver",
+                                    2000,
+                                ]}
+                                wrapper="span"
+                                speed={30}
+                                repeat={Infinity}
+                                className="text-accent"
+                            />
+                        </h2>
+                    </div>
+                    
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                        className="text-xl md:text-2xl text-secondary max-w-4xl mx-auto leading-relaxed"
+                    >
+                        {profile.bio}
+                    </motion.p>
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="flex gap-4"
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="flex flex-col sm:flex-row gap-6 justify-center items-center"
                 >
                     <a
                         href={profile.socialLinks.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded-full transition-colors"
+                        className="group flex items-center gap-3 px-8 py-4 bg-surface-secondary hover:bg-surface-tertiary rounded-apple transition-apple shadow-apple-light"
                     >
-                        GitHub
+                        <FaGithub className="w-5 h-5 text-primary group-hover:text-accent transition-apple" />
+                        <span className="text-primary font-medium">GitHub</span>
                     </a>
                     <a
                         href={profile.socialLinks.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-secondary-500 hover:bg-secondary-600 text-white font-bold py-2 px-4 rounded-full transition-colors"
+                        className="group flex items-center gap-3 px-8 py-4 bg-surface-secondary hover:bg-surface-tertiary rounded-apple transition-apple shadow-apple-light"
                     >
-                        LinkedIn
+                        <FaLinkedin className="w-5 h-5 text-primary group-hover:text-accent transition-apple" />
+                        <span className="text-primary font-medium">LinkedIn</span>
                     </a>
-                </motion.div>
-            </motion.div>
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-                className="flex justify-center items-center"
-            >
-                <div className="relative w-64 h-64 md:w-80 md:h-80">
-                    <Image
-                        src={profile.profileImage}
-                        alt="Profile"
-                        fill
-                        className="rounded-full object-cover"
-                        priority
+                    
+                    {/* Resume Preview */}
+                    <ResumePreview 
+                        resumeUrl={profile.resumeUrl} 
+                        resumeName={profile.resumeName || "Resume"} 
                     />
-                </div>
-            </motion.div>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
+                    className="flex justify-center"
+                >
+                    <div className="w-32 h-32 md:w-40 md:h-40 relative">
+                        <Image
+                            src={profile.profileImage}
+                            alt="Profile"
+                            fill
+                            className="rounded-apple-xl object-cover shadow-apple"
+                            priority
+                        />
+                    </div>
+                </motion.div>
+            </div>
         </section>
     );
 };

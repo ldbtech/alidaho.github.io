@@ -10,14 +10,16 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-[#121212]">
+    <main className="min-h-screen bg-theme">
       <Navbar />
-      <div className="container mt-24 mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="w-full">
         <HeroSections />
-        <AchievementsSection />
-        <AboutSection />
-        <ProjectsSection />
-        <EmailSection />
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <AchievementsSection />
+          <AboutSection />
+          <ProjectsSection />
+          <EmailSection />
+        </div>
       </div>
       <Footer />
     </main>

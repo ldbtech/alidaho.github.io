@@ -14,16 +14,52 @@ const defaultSkillGroups = [
 ];
 
 const AboutSection = () => {
-  const [activeTab, setActiveTab] = useState("skills");
+  const [activeTab, setActiveTab] = useState("experience");
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageError, setImageError] = useState(false);
 
+  // Function to render description with bullet points
+  const renderDescription = (description) => {
+    if (!description) return null;
+    
+    // Split by lines and check for bullet points
+    const lines = description.split('\n').filter(line => line.trim());
+    
+    // Check if any line starts with a bullet point indicator
+    const hasBulletPoints = lines.some(line => 
+      line.trim().startsWith('- ') || 
+      line.trim().startsWith('• ') || 
+      line.trim().startsWith('* ')
+    );
+    
+    if (hasBulletPoints) {
+      return (
+        <ul className="mt-2 space-y-1">
+          {lines.map((line, index) => {
+            const trimmedLine = line.trim();
+            // Remove bullet point indicators and render as list item
+            const cleanLine = trimmedLine.replace(/^[-•*]\s*/, '');
+            return (
+              <li key={index} className="text-secondary flex items-start">
+                <span className="text-accent mr-2 mt-1">•</span>
+                <span>{cleanLine}</span>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+    
+    // If no bullet points, render as regular paragraph
+    return <p className="mt-2 text-secondary">{description}</p>;
+  };
+
   const tabs = [
-    { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
     { id: "experience", label: "Experience", icon: <FaServer className="text-xl" /> },
     { id: "education", label: "Education", icon: <FaDatabase className="text-xl" /> },
+    { id: "skills", label: "Skills", icon: <FaCode className="text-xl" /> },
     { id: "tools", label: "Tools", icon: <FaTools className="text-xl" /> },
   ];
 
@@ -109,71 +145,80 @@ const AboutSection = () => {
   }
 
   return (
-    <section className="py-16" id="about">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <section className="py-24 space-y-16" id="about">
+      <div className="text-center space-y-6">
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="col-span-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative w-32 h-32 mx-auto mb-8"
         >
-          <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] mx-auto">
-            {content.images.aboutMe && !imageError ? (
-              <Image
-                src={content.images.aboutMe}
-                alt="About Me"
-                className="rounded-full object-cover"
-                fill
-                priority
-                unoptimized
-                onError={handleImageError}
-              />
-            ) : (
-              <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center text-white text-4xl font-bold">
-                AD
-              </div>
-            )}
-          </div>
+          {content.images.aboutMe && !imageError ? (
+            <Image
+              src={content.images.aboutMe}
+              alt="About Me"
+              className="rounded-apple-xl object-cover shadow-apple"
+              fill
+              priority
+              unoptimized
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-full h-full rounded-apple-xl bg-gradient-theme flex items-center justify-center text-white text-2xl font-semibold shadow-apple">
+              AD
+            </div>
+          )}
         </motion.div>
+        
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="col-span-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="space-y-4"
         >
-          <h2 className="text-4xl font-bold text-white mb-8">
-            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">Me</span>
+          <h2 className="text-5xl font-bold text-primary">
+            About <span className="text-transparent bg-clip-text bg-gradient-theme">Me</span>
           </h2>
-          <p className="text-[#ADB7BE] text-lg mb-8">
+          <p className="text-secondary text-xl max-w-3xl mx-auto leading-relaxed">
             {content.bio}
           </p>
-          <div className="flex flex-wrap gap-4 mb-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? "bg-gradient-to-r from-blue-500 to-teal-500 text-white"
-                    : "bg-[#181818] text-[#ADB7BE] hover:bg-[#2A2A2A]"
-                }`}
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="bg-[#181818] p-6 rounded-2xl">
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="space-y-8"
+      >
+        <div className="flex flex-wrap justify-center gap-3">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-apple transition-apple ${
+                activeTab === tab.id
+                  ? "bg-accent text-white shadow-apple-light"
+                  : "bg-surface-secondary text-secondary hover:bg-surface-tertiary"
+              }`}
+            >
+              {tab.icon}
+              <span className="font-medium">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+        
+        <div className="bg-surface-secondary rounded-apple-lg p-8 shadow-apple-light">
             {activeTab === "skills" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {content.skillGroups.map((group, index) => (
-                  <div key={index} className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white">{group.title}</h3>
-                    <div className="flex flex-wrap gap-2">
+                  <div key={index} className="space-y-4">
+                    <h3 className="text-2xl font-semibold text-primary">{group.title}</h3>
+                    <div className="flex flex-wrap gap-3">
                       {group.items.map((skill, skillIndex) => (
                         <span
                           key={skillIndex}
-                          className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
+                          className="px-4 py-2 bg-surface-tertiary text-secondary rounded-apple text-sm font-medium"
                         >
                           {skill}
                         </span>
@@ -184,43 +229,118 @@ const AboutSection = () => {
               </div>
             )}
             {activeTab === "experience" && (
-              <div className="space-y-6">
-                {content.experience.map((exp, index) => (
-                  <div key={index} className="border-l-2 border-blue-500 pl-4">
-                    <h3 className="text-xl font-semibold text-white">{exp.title}</h3>
-                    <p className="text-[#ADB7BE]">{exp.company}</p>
-                    <p className="text-sm text-[#ADB7BE]">{exp.period}</p>
-                    <p className="mt-2 text-[#ADB7BE]">{exp.description}</p>
-                  </div>
-                ))}
+              <div className="space-y-8">
+                {content.experience
+                  .sort((a, b) => {
+                    // Extract start date from period string with better parsing
+                    const getStartDate = (period) => {
+                      if (!period) return new Date(0);
+                      
+                      // Split by ' - ' and take the first part (start date)
+                      const startDateStr = period.split(' - ')[0].trim();
+                      
+                      // Handle different date formats
+                      // Format: "Month YYYY" (e.g., "March 2024")
+                      if (/^[A-Za-z]+ \d{4}$/.test(startDateStr)) {
+                        return new Date(startDateStr);
+                      }
+                      
+                      // Format: "Month YYYY - Month YYYY" (e.g., "March 2024 - August 2024")
+                      if (startDateStr.includes(' ')) {
+                        return new Date(startDateStr);
+                      }
+                      
+                      // Fallback to original parsing
+                      return new Date(startDateStr);
+                    };
+                    
+                    // Sort by start date (most recent first)
+                    const dateA = getStartDate(a.period);
+                    const dateB = getStartDate(b.period);
+                    
+                    // Handle invalid dates
+                    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                    if (isNaN(dateA.getTime())) return 1;
+                    if (isNaN(dateB.getTime())) return -1;
+                    
+                    return dateB - dateA;
+                  })
+                  .map((exp, index) => (
+                    <div key={index} className="bg-surface rounded-apple p-6 shadow-apple-light">
+                      <div className="space-y-3">
+                        <h3 className="text-2xl font-semibold text-primary">{exp.title}</h3>
+                        <p className="text-accent font-medium text-lg">{exp.company}</p>
+                        <p className="text-tertiary text-sm font-medium">{exp.period}</p>
+                        <div className="pt-2">
+                          {renderDescription(exp.description)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
               </div>
             )}
             {activeTab === "education" && (
               <div className="space-y-6">
-                {content.education.map((edu, index) => (
-                  <div key={index} className="border-l-2 border-teal-500 pl-4">
-                    <h3 className="text-xl font-semibold text-white">{edu.degree}</h3>
-                    <p className="text-[#ADB7BE]">{edu.school}</p>
-                    <p className="text-sm text-[#ADB7BE]">{edu.period}</p>
-                  </div>
-                ))}
+                {content.education
+                  .sort((a, b) => {
+                    // Extract start date from period string with better parsing
+                    const getStartDate = (period) => {
+                      if (!period) return new Date(0);
+                      
+                      // Split by ' - ' and take the first part (start date)
+                      const startDateStr = period.split(' - ')[0].trim();
+                      
+                      // Handle different date formats
+                      // Format: "Month YYYY" (e.g., "March 2024")
+                      if (/^[A-Za-z]+ \d{4}$/.test(startDateStr)) {
+                        return new Date(startDateStr);
+                      }
+                      
+                      // Format: "Month YYYY - Month YYYY" (e.g., "March 2024 - August 2024")
+                      if (startDateStr.includes(' ')) {
+                        return new Date(startDateStr);
+                      }
+                      
+                      // Fallback to original parsing
+                      return new Date(startDateStr);
+                    };
+                    
+                    // Sort by start date (most recent first)
+                    const dateA = getStartDate(a.period);
+                    const dateB = getStartDate(b.period);
+                    
+                    // Handle invalid dates
+                    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                    if (isNaN(dateA.getTime())) return 1;
+                    if (isNaN(dateB.getTime())) return -1;
+                    
+                    return dateB - dateA;
+                  })
+                  .map((edu, index) => (
+                    <div key={index} className="bg-surface rounded-apple p-6 shadow-apple-light">
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-semibold text-primary">{edu.degree}</h3>
+                        <p className="text-accent font-medium text-lg">{edu.school}</p>
+                        <p className="text-tertiary text-sm font-medium">{edu.period}</p>
+                      </div>
+                    </div>
+                  ))}
               </div>
             )}
             {activeTab === "tools" && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {content.tools.map((tool) => (
                   <span
                     key={tool}
-                    className="px-3 py-1 bg-[#2A2A2A] text-[#ADB7BE] rounded-full text-sm"
+                    className="px-4 py-2 bg-surface-tertiary text-secondary rounded-apple text-sm font-medium"
                   >
                     {tool}
                   </span>
                 ))}
               </div>
             )}
-          </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </section>
   );
 };

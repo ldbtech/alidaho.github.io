@@ -42,12 +42,209 @@
   }
 }
 
+/* Apple-inspired design system */
 :root {
+  /* Dark theme (Apple's preferred) */
   --foreground: #ffffff;
-  --background: #121212;
+  --background: #000000;
+  --surface: #1c1c1e;
+  --surface-secondary: #2c2c2e;
+  --surface-tertiary: #3a3a3c;
+  --text-primary: #ffffff;
+  --text-secondary: #ebebf5;
+  --text-tertiary: #ebebf599;
+  --text-quaternary: #ebebf54d;
+  --separator: #38383a;
+  --accent: #007aff;
+  --accent-hover: #0056b3;
+  --success: #34c759;
+  --warning: #ff9500;
+  --error: #ff3b30;
+  --gradient-start: #007aff;
+  --gradient-end: #5856d6;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-light: rgba(0, 0, 0, 0.1);
 }
 
+/* Dark theme (default) */
+.dark {
+  --foreground: #ffffff;
+  --background: #000000;
+  --surface: #1c1c1e;
+  --surface-secondary: #2c2c2e;
+  --surface-tertiary: #3a3a3c;
+  --text-primary: #ffffff;
+  --text-secondary: #ebebf5;
+  --text-tertiary: #ebebf599;
+  --text-quaternary: #ebebf54d;
+  --separator: #38383a;
+  --accent: #007aff;
+  --accent-hover: #0056b3;
+  --success: #34c759;
+  --warning: #ff9500;
+  --error: #ff3b30;
+  --gradient-start: #007aff;
+  --gradient-end: #5856d6;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme */
+.light {
+  --foreground: #000000;
+  --background: #ffffff;
+  --surface: #f2f2f7;
+  --surface-secondary: #ffffff;
+  --surface-tertiary: #f2f2f7;
+  --text-primary: #000000;
+  --text-secondary: #3c3c43;
+  --text-tertiary: #3c3c4399;
+  --text-quaternary: #3c3c434d;
+  --separator: #c6c6c8;
+  --accent: #007aff;
+  --accent-hover: #0056b3;
+  --success: #34c759;
+  --warning: #ff9500;
+  --error: #ff3b30;
+  --gradient-start: #007aff;
+  --gradient-end: #5856d6;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
+}
+
+/* Apple-style typography and base styles */
 body {
-  color: var(--foreground);
+  color: var(--text-primary);
   background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.47;
+  letter-spacing: -0.022em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apple-style headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Apple-style utility classes */
+.bg-theme {
+  background-color: var(--background);
+}
+
+.bg-surface {
+  background-color: var(--surface);
+}
+
+.bg-surface-secondary {
+  background-color: var(--surface-secondary);
+}
+
+.bg-surface-tertiary {
+  background-color: var(--surface-tertiary);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-quaternary {
+  color: var(--text-quaternary);
+}
+
+.border-separator {
+  border-color: var(--separator);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-accent-hover:hover {
+  background-color: var(--accent-hover);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.bg-gradient-theme {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+/* Apple-style shadows */
+.shadow-apple {
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.shadow-apple-light {
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* Apple-style rounded corners */
+.rounded-apple {
+  border-radius: 12px;
+}
+
+.rounded-apple-lg {
+  border-radius: 16px;
+}
+
+.rounded-apple-xl {
+  border-radius: 20px;
+}
+
+/* Apple-style spacing */
+.space-apple {
+  padding: 2rem;
+}
+
+.space-apple-lg {
+  padding: 3rem;
+}
+
+.space-apple-xl {
+  padding: 4rem;
+}
+
+/* Apple-style transitions */
+.transition-apple {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Apple-style focus states */
+.focus-apple:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.3);
 }

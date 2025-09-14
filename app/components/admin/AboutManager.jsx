@@ -2,8 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaGripVertical } from 'react-icons/fa';
 import { fetchData, saveAbout } from '../../services/firebase';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const defaultAboutState = {
     bio: '',
@@ -24,6 +42,93 @@ const defaultAboutState = {
     tools: []
 };
 
+// Sortable Experience Item Component
+const SortableExperienceItem = ({ exp, index, updateExperience, removeExperience }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: index });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={`bg-[#2A2A2A] p-4 rounded-lg space-y-4 ${isDragging ? 'shadow-lg' : ''}`}
+        >
+            <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab hover:cursor-grabbing p-1 text-gray-400 hover:text-white transition-colors"
+                    >
+                        <FaGripVertical />
+                    </div>
+                    <h3 className="text-lg font-semibold text-white">Experience {index + 1}</h3>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => removeExperience(index)}
+                    className="text-red-400 hover:text-red-300 transition-colors"
+                >
+                    <FaTrash />
+                </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-1">Title</label>
+                    <input
+                        type="text"
+                        value={exp.title}
+                        onChange={(e) => updateExperience(index, 'title', e.target.value)}
+                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-1">Company</label>
+                    <input
+                        type="text"
+                        value={exp.company}
+                        onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-1">Period</label>
+                    <input
+                        type="text"
+                        value={exp.period}
+                        onChange={(e) => updateExperience(index, 'period', e.target.value)}
+                        placeholder="e.g., March 2024 - August 2024"
+                        className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+            </div>
+            
+            <div>
+                <label className="block text-sm font-medium text-gray-200 mb-1">Description</label>
+                <textarea
+                    value={exp.description}
+                    onChange={(e) => updateExperience(index, 'description', e.target.value)}
+                    rows={3}
+                    className="w-full bg-[#1A1A1A] text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+        </div>
+    );
+};
+
 const AboutManager = () => {
     const [about, setAbout] = useState(defaultAboutState);
     const [loading, setLoading] = useState(true);
@@ -34,6 +139,14 @@ const AboutManager = () => {
     const [newTool, setNewTool] = useState('');
     const [selectedImageType, setSelectedImageType] = useState('profile');
     const [newImageUrl, setNewImageUrl] = useState('');
+
+    // Drag and drop sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     useEffect(() => {
         loadAbout();
@@ -201,6 +314,18 @@ const AboutManager = () => {
             ...prev,
             education: prev.education.filter((_, i) => i !== index)
         }));
+    };
+
+    // Drag and drop handlers
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+
+        if (active.id !== over.id) {
+            setAbout(prev => ({
+                ...prev,
+                experience: arrayMove(prev.experience, active.id, over.id)
+            }));
+        }
     };
 
     const updateImage = () => {
@@ -447,52 +572,28 @@ const AboutManager = () => {
                                 Add Experience
                             </button>
                         </div>
-                        <div className="space-y-4">
-                            {about.experience.map((exp, index) => (
-                                <div key={index} className="bg-[#2A2A2A] p-4 rounded-lg space-y-4">
-                                    <div className="flex justify-between">
-                                        <h3 className="text-lg font-semibold text-white">Experience {index + 1}</h3>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeExperience(index)}
-                                            className="text-red-500 hover:text-red-400"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            value={exp.title}
-                                            onChange={(e) => updateExperience(index, 'title', e.target.value)}
-                                            placeholder="Job Title"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={about.experience.map((_, index) => index)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                <div className="space-y-4">
+                                    {about.experience.map((exp, index) => (
+                                        <SortableExperienceItem
+                                            key={index}
+                                            exp={exp}
+                                            index={index}
+                                            updateExperience={updateExperience}
+                                            removeExperience={removeExperience}
                                         />
-                                        <input
-                                            type="text"
-                                            value={exp.company}
-                                            onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                                            placeholder="Company"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={exp.period}
-                                            onChange={(e) => updateExperience(index, 'period', e.target.value)}
-                                            placeholder="Period"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <textarea
-                                            value={exp.description}
-                                            onChange={(e) => updateExperience(index, 'description', e.target.value)}
-                                            placeholder="Description"
-                                            className="bg-[#181818] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            rows={3}
-                                        />
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </SortableContext>
+                        </DndContext>
                     </div>
 
                     {/* Education Section */}

@@ -12,6 +12,7 @@ import AboutManager from '../components/admin/AboutManager';
 import ProfileManager from '../components/admin/ProfileManager';
 import TimelineManager from '../components/admin/TimelineManager';
 import ThoughtManager from '../components/admin/ThoughtManager';
+import ResumeManager from '../components/admin/ResumeManager';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("timeline");
