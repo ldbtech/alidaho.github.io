@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaSave, FaTrash, FaPlus, FaEdit, FaLink, FaSignOutAlt, FaHistory, FaProjectDiagram, FaUser, FaInfoCircle, FaLightbulb } from "react-icons/fa";
+import { FaSave, FaTrash, FaPlus, FaEdit, FaLink, FaSignOutAlt, FaHistory, FaProjectDiagram, FaUser, FaInfoCircle, FaLightbulb, FaFilePdf } from "react-icons/fa";
 import { getDatabase, ref, set, remove } from "firebase/database";
 import database from "../services/firebase";
 import { fetchData, saveProject, saveAbout, getCurrentUser, logout, initAuthStateListener } from "../services/firebase";
@@ -159,6 +159,7 @@ const AdminPage = () => {
     { id: 'projects', label: 'Projects', icon: FaProjectDiagram },
     { id: 'thoughts', label: 'My Thoughts', icon: FaLightbulb },
     { id: 'profile', label: 'Profile', icon: FaUser },
+    { id: 'resume', label: 'Resume', icon: FaFilePdf },
     { id: 'about', label: 'About', icon: FaInfoCircle },
   ];
 
@@ -172,6 +173,8 @@ const AdminPage = () => {
         return <ThoughtManager />;
       case 'profile':
         return <ProfileManager />;
+      case 'resume':
+        return <ResumeManager />;
       case 'about':
         return <AboutManager />;
       default:

@@ -132,7 +132,8 @@ const HeroSections = () => {
                     {/* Resume Preview */}
                     <ResumePreview 
                         resumeUrl={profile.resumeUrl} 
-                        resumeName={profile.resumeName || "Resume"} 
+                        resumeName={profile.resumeName || "Resume"}
+                        showDownload={false}
                     />
                 </motion.div>
 

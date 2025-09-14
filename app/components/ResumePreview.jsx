@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDownload, FaEye, FaTimes } from 'react-icons/fa';
 
-const ResumePreview = ({ resumeUrl, resumeName = "Resume" }) => {
+const ResumePreview = ({ resumeUrl, resumeName = "Resume", showDownload = true }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   if (!resumeUrl) {
@@ -27,12 +27,7 @@ const ResumePreview = ({ resumeUrl, resumeName = "Resume" }) => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.2 }}
-        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-      >
+      <div className="flex flex-col sm:flex-row gap-4">
         <button
           onClick={handlePreview}
           className="group flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent-hover text-white rounded-apple transition-apple shadow-apple-light"
@@ -41,14 +36,16 @@ const ResumePreview = ({ resumeUrl, resumeName = "Resume" }) => {
           <span className="font-medium">View Resume</span>
         </button>
         
-        <button
-          onClick={handleDownload}
-          className="group flex items-center gap-3 px-8 py-4 bg-surface-secondary hover:bg-surface-tertiary text-primary rounded-apple transition-apple shadow-apple-light"
-        >
-          <FaDownload className="w-5 h-5 group-hover:text-accent transition-apple" />
-          <span className="font-medium">Download PDF</span>
-        </button>
-      </motion.div>
+        {showDownload && (
+          <button
+            onClick={handleDownload}
+            className="group flex items-center gap-3 px-8 py-4 bg-surface-secondary hover:bg-surface-tertiary text-primary rounded-apple transition-apple shadow-apple-light"
+          >
+            <FaDownload className="w-5 h-5 group-hover:text-accent transition-apple" />
+            <span className="font-medium">Download PDF</span>
+          </button>
+        )}
+      </div>
 
       {/* Resume Preview Modal */}
       <AnimatePresence>
