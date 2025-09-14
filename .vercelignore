@@ -3,7 +3,6 @@ node_modules/
 .pnpm-store/
 
 # Build outputs
-.next/
 out/
 dist/
 
@@ -60,8 +59,8 @@ jspm_packages/
 .cache
 .parcel-cache
 
-# Next.js build output
-.next
+# Next.js build output (commented out - Vercel needs access to .next for routes manifest)
+# .next
 
 # Nuxt.js build / generate output
 .nuxt
