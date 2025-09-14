@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaSave, FaTrash, FaPlus, FaEdit, FaLink, FaSignOutAlt, FaHistory, FaProjectDiagram, FaUser, FaInfoCircle, FaLightbulb, FaFilePdf } from "react-icons/fa";
+import { FaSave, FaTrash, FaPlus, FaEdit, FaLink, FaSignOutAlt, FaProjectDiagram, FaUser, FaInfoCircle, FaLightbulb, FaFilePdf } from "react-icons/fa";
 import { getDatabase, ref, set, remove } from "firebase/database";
 import database from "../services/firebase";
 import { fetchData, saveProject, saveAbout, getCurrentUser, logout, initAuthStateListener } from "../services/firebase";
@@ -10,12 +10,11 @@ import LoginForm from "../components/LoginForm";
 import ProjectManager from '../components/admin/ProjectManager';
 import AboutManager from '../components/admin/AboutManager';
 import ProfileManager from '../components/admin/ProfileManager';
-import TimelineManager from '../components/admin/TimelineManager';
 import ThoughtManager from '../components/admin/ThoughtManager';
 import ResumeManager from '../components/admin/ResumeManager';
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState("timeline");
+  const [activeTab, setActiveTab] = useState("projects");
   const [projects, setProjects] = useState([]);
   const [about, setAbout] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -155,7 +154,6 @@ const AdminPage = () => {
   }
 
   const tabs = [
-    { id: 'timeline', label: 'Timeline', icon: FaHistory },
     { id: 'projects', label: 'Projects', icon: FaProjectDiagram },
     { id: 'thoughts', label: 'My Thoughts', icon: FaLightbulb },
     { id: 'profile', label: 'Profile', icon: FaUser },
@@ -165,8 +163,6 @@ const AdminPage = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'timeline':
-        return <TimelineManager />;
       case 'projects':
         return <ProjectManager />;
       case 'thoughts':
@@ -178,7 +174,7 @@ const AdminPage = () => {
       case 'about':
         return <AboutManager />;
       default:
-        return <TimelineManager />;
+        return <ProjectManager />;
     }
   };
 

@@ -2,10 +2,37 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, get } from 'firebase/database';
 import { database } from '../../services/firebase';
 import Link from 'next/link';
 import { FaArrowLeft, FaCalendarAlt, FaTag } from 'react-icons/fa';
+
+// Generate static params for static export
+export async function generateStaticParams() {
+  try {
+    if (!database) {
+      console.warn('Firebase database not initialized, returning empty params');
+      return [];
+    }
+
+    const thoughtsRef = ref(database, 'thoughts');
+    const snapshot = await get(thoughtsRef);
+    const thoughts = snapshot.val();
+
+    if (!thoughts) {
+      console.warn('No thoughts found, returning empty params');
+      return [];
+    }
+
+    // Return array of params for each thought
+    return Object.keys(thoughts).map((id) => ({
+      id: id,
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
 
 const ThoughtPage = ({ params }) => {
   const [thought, setThought] = useState(null);

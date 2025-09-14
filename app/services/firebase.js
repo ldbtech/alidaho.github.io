@@ -310,25 +310,6 @@ export const getProjectCount = async () => {
   }
 };
 
-export const saveJourneyEvent = async (event) => {
-  try {
-    if (!auth.currentUser) {
-      throw new Error("Authentication required");
-    }
-
-    if (!event.id) {
-      throw new Error("Event ID is required");
-    }
-
-    const eventRef = ref(database, `journey/${event.id}`);
-    await set(eventRef, event);
-    console.log("Journey event saved successfully");
-    return true;
-  } catch (error) {
-    console.error("Error saving journey event:", error);
-    throw new Error(`Failed to save journey event: ${error.message}`);
-  }
-};
 
 // Export the database instance
 export { database };
