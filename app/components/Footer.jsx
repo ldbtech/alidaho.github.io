@@ -8,16 +8,11 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 const Footer = () => {
     const [profile, setProfile] = useState(null);
     const [imageError, setImageError] = useState(false);
-    const basePath = process.env.NODE_ENV === 'production' ? '/alidaho.github.io' : '';
 
     useEffect(() => {
         const loadProfile = async () => {
             try {
                 const data = await fetchProfile();
-                if (data?.logo) {
-                    // Ensure the logo path is absolute
-                    data.logo = data.logo.startsWith('http') ? data.logo : `${basePath}${data.logo}`;
-                }
                 setProfile(data);
             } catch (error) {
                 console.error('Error loading profile:', error);
@@ -26,7 +21,7 @@ const Footer = () => {
         };
 
         loadProfile();
-    }, [basePath]);
+    }, []);
 
     const handleImageError = () => {
         console.error('Failed to load logo image');
