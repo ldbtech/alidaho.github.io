@@ -44,17 +44,17 @@
 
 /* Apple-inspired design system */
 :root {
-  /* Dark theme (Apple's preferred) */
-  --foreground: #ffffff;
-  --background: #000000;
-  --surface: #1c1c1e;
-  --surface-secondary: #2c2c2e;
-  --surface-tertiary: #3a3a3c;
-  --text-primary: #ffffff;
-  --text-secondary: #ebebf5;
-  --text-tertiary: #ebebf599;
-  --text-quaternary: #ebebf54d;
-  --separator: #38383a;
+  /* Light theme defaults */
+  --foreground: #000000;
+  --background: #ffffff;
+  --surface: #f2f2f7;
+  --surface-secondary: #ffffff;
+  --surface-tertiary: #f2f2f7;
+  --text-primary: #000000;
+  --text-secondary: #3c3c43;
+  --text-tertiary: #3c3c4399;
+  --text-quaternary: #3c3c434d;
+  --separator: #c6c6c8;
   --accent: #007aff;
   --accent-hover: #0056b3;
   --success: #34c759;
@@ -62,8 +62,8 @@
   --error: #ff3b30;
   --gradient-start: #007aff;
   --gradient-end: #5856d6;
-  --shadow: rgba(0, 0, 0, 0.3);
-  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
 }
 
 /* Dark theme (default) */
@@ -89,7 +89,7 @@
   --shadow-light: rgba(0, 0, 0, 0.1);
 }
 
-/* Light theme */
+/* Optional explicit light theme class (not required) */
 .light {
   --foreground: #000000;
   --background: #ffffff;

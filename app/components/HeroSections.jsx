@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
 import { motion } from "framer-motion";
@@ -14,6 +14,84 @@ const HeroSections = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showTerminal, setShowTerminal] = useState(false);
+
+    // Simple interactive terminal component
+    const Terminal = ({ profileData, aboutData }) => {
+        const [input, setInput] = useState("");
+        const [lines, setLines] = useState([
+            { type: "out", text: "terminal" },
+            { type: "prompt", text: "$ type 'help' to get started" },
+        ]);
+        const scrollRef = useRef(null);
+
+        const appendLine = (newLine) => setLines((prev) => [...prev, newLine]);
+
+        const commands = {
+            help: () => {
+                return [
+                    "Available commands:",
+                    "help - Show available commands",
+                    "whoami - Show name",
+                    "skills - List core skills",
+                    "languages - List spoken languages",
+                    "socials - Show social links",
+                    "clear - Clear the terminal",
+                ];
+            },
+            whoami: () => [profileData?.name || "Unknown"],
+            skills: () => ["→ Full Stack Development", "→ AI & Machine Learning", "→ Best Striker ⚽️"],
+            languages: () => [
+                `→ ${aboutData?.spokenLanguages?.map(l => l.language).join(', ') || 'Multiple'}`,
+            ],
+            socials: () => [
+                profileData?.socialLinks?.github ? `GitHub: ${profileData.socialLinks.github}` : null,
+                profileData?.socialLinks?.linkedin ? `LinkedIn: ${profileData.socialLinks.linkedin}` : null,
+            ].filter(Boolean),
+            clear: () => { setLines([]); return []; },
+        };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            const cmd = input.trim();
+            if (!cmd) return;
+            appendLine({ type: "in", text: `$ ${cmd}` });
+            const [base] = cmd.split(/\s+/);
+            const handler = commands[base?.toLowerCase()];
+            if (handler) {
+                const result = handler();
+                result.forEach((t) => t && appendLine({ type: "out", text: t }));
+            } else {
+                appendLine({ type: "out", text: `Command not found: ${cmd}. Try 'help'.` });
+            }
+            setInput("");
+        };
+
+        useEffect(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
+        }, [lines]);
+
+        return (
+            <div className="font-mono text-sm text-left flex flex-col max-h-72 overflow-hidden">
+                <div className="space-y-1 overflow-y-auto pr-1" ref={scrollRef}>
+                    {lines.map((l, idx) => (
+                        <div key={idx} className={l.type === 'in' ? 'text-accent' : 'text-secondary'}>{l.text}</div>
+                    ))}
+                </div>
+                <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-2 shrink-0">
+                    <span className="text-accent select-none">$</span>
+                    <input
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        className="flex-1 bg-transparent border-b border-separator focus:outline-none focus:border-accent text-primary placeholder:text-tertiary"
+                        placeholder="Type a command... (help)"
+                        aria-label="terminal input"
+                    />
+                </form>
+            </div>
+        );
+    };
 
     useEffect(() => {
         const loadData = async () => {
@@ -141,17 +219,7 @@ const HeroSections = () => {
                                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                 <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
                             </div>
-                            <div className="space-y-2 font-mono text-sm text-left">
-                                <div className="text-accent">$ whoami</div>
-                                <div className="text-primary">{profile.name || "Ali Daho Bachir"}</div>
-                                <div className="text-accent">$ skills</div>
-                                <div className="text-secondary">→ Full Stack Development</div>
-                                <div className="text-secondary">→ AI & Machine Learning</div>
-                                <div className="text-secondary">→ Problem Solving</div>
-                                <div className="text-accent">$ languages</div>
-                                <div className="text-secondary">→ {about?.spokenLanguages?.map(lang => lang.language).join(', ') || 'Multiple'}</div>
-                                <div className="text-accent animate-pulse">█</div>
-                            </div>
+                            <Terminal profileData={profile} aboutData={about} />
                         </div>
                     </motion.div>
 
@@ -181,7 +249,7 @@ const HeroSections = () => {
                                     4000,
                                     "Software Developer",
                                     3000,
-                                    "Problem Solver",
+                                    "Best Striker ⚽️",
                                     3000,
                                     "Polyglot",
                                     2000,
@@ -259,17 +327,7 @@ const HeroSections = () => {
                             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                             <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
                         </div>
-                        <div className="space-y-2 font-mono text-sm">
-                            <div className="text-accent">$ whoami</div>
-                            <div className="text-primary">{profile.name}</div>
-                            <div className="text-accent">$ skills</div>
-                            <div className="text-secondary">→ Full Stack Development</div>
-                            <div className="text-secondary">→ AI & Machine Learning</div>
-                            <div className="text-secondary">→ Problem Solving</div>
-                            <div className="text-accent">$ languages</div>
-                            <div className="text-secondary">→ {about?.spokenLanguages?.map(lang => lang.language).join(', ') || 'Multiple'}</div>
-                            <div className="text-accent animate-pulse">█</div>
-                        </div>
+                        <Terminal profileData={profile} aboutData={about} />
                     </div>
 
                     {/* Floating Elements */}

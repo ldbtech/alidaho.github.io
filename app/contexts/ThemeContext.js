@@ -17,24 +17,36 @@ export const ThemeProvider = ({ children }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Get theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
+    // Resolve initial theme: localStorage → system preference → dark
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light' || saved === 'dark') {
+        setTheme(saved);
+      } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light');
+      }
+    } catch (_) {
+      setTheme('dark');
+    }
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted) {
-      // Save theme to localStorage
+    if (!mounted) return;
+    try {
       localStorage.setItem('theme', theme);
-      
-      // Update document class for CSS variables
-      document.documentElement.className = theme;
-    }
+    } catch (_) {}
+
+    // Toggle only the 'dark' class (Tailwind dark mode uses class strategy)
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    // Ensure we do not leave stray 'light'/'dark' class names
+    document.documentElement.classList.remove('light');
   }, [theme, mounted]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   // Always provide the context, but handle hydration carefully
@@ -42,7 +54,7 @@ export const ThemeProvider = ({ children }) => {
     theme: mounted ? theme : 'dark',
     toggleTheme,
     isDark: mounted ? theme === 'dark' : true,
-    isLight: mounted ? theme === 'light' : false
+    isLight: mounted ? theme === 'light' : false,
   };
 
   return (
