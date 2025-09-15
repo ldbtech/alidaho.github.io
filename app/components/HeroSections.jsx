@@ -7,6 +7,7 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { fetchProfile, fetchData } from '../services/firebase';
 import ResumePreview from './ResumePreview';
+import ProjectCard from './ProjectCard';
 import Modal from './Modal';
 
 const HeroSections = () => {
@@ -17,6 +18,7 @@ const HeroSections = () => {
     const [showTerminal, setShowTerminal] = useState(false);
     const [showExperienceModal, setShowExperienceModal] = useState(false);
     const [showProjectsModal, setShowProjectsModal] = useState(false);
+    const [projects, setProjects] = useState([]);
 
     // Simple interactive terminal component
     const Terminal = ({ profileData, aboutData, onShowExperience, onShowProjects }) => {
@@ -117,14 +119,22 @@ const HeroSections = () => {
         const loadData = async () => {
             try {
                 console.log('HeroSections: Starting to load data...');
-                const [profileData, aboutData] = await Promise.all([
+                const [profileData, aboutData, projectsData] = await Promise.all([
                     fetchProfile(),
-                    fetchData('about')
+                    fetchData('about'),
+                    fetchData('projects')
                 ]);
                 console.log('HeroSections: Profile data loaded:', profileData);
                 console.log('HeroSections: About data loaded:', aboutData);
                 setProfile(profileData);
                 setAbout(aboutData);
+                if (projectsData) {
+                    const arr = Object.values(projectsData).map(p => ({
+                        ...p,
+                        tags: p.tags || [],
+                    }));
+                    setProjects(arr);
+                }
             } catch (error) {
                 console.error('HeroSections: Error loading data:', error);
                 setError(error.message);
@@ -412,8 +422,15 @@ const HeroSections = () => {
                 title="Projects"
                 maxWidth="max-w-5xl"
             >
-                {/* Reuse projects from Firebase if available in about or load separately later */}
-                <ProjectsPlaceholder />
+                {projects && projects.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {projects.map((project) => (
+                            <ProjectCard key={project.id || project.title} project={project} />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-secondary">No projects available.</p>
+                )}
             </Modal>
         </section>
     );
@@ -428,16 +445,61 @@ export const ExperienceModalContent = ({ about }) => {
     if (!about?.experience || about.experience.length === 0) {
         return <p className="text-secondary">No experience added yet.</p>;
     }
+    const sorted = [...about.experience].sort((a, b) => {
+        const getStartDate = (period) => {
+            if (!period) return new Date(0);
+            const start = period.split(' - ')[0]?.trim();
+            return new Date(start);
+        };
+        return getStartDate(b.period) - getStartDate(a.period);
+    });
+
+    const renderDescription = (description) => {
+        if (!description) return null;
+        const lines = description.split('\n').filter(Boolean);
+        const hasBullets = lines.some(l => /^(?:[-•*])\s+/.test(l.trim()));
+        if (hasBullets) {
+            return (
+                <ul className="mt-2 space-y-1">
+                    {lines.map((line, i) => (
+                        <li key={i} className="text-secondary flex items-start">
+                            <span className="text-accent mr-2 mt-1">•</span>
+                            <span>{line.replace(/^[-•*]\s*/, '')}</span>
+                        </li>
+                    ))}
+                </ul>
+            );
+        }
+        return <p className="mt-2 text-secondary">{description}</p>;
+    };
+
     return (
         <div className="space-y-4">
-            {about.experience.map((exp, idx) => (
-                <div key={idx} className="bg-surface-secondary rounded-apple p-4 border border-separator">
-                    <h4 className="text-primary font-semibold">{exp.title}</h4>
-                    <p className="text-accent text-sm">{exp.company}</p>
-                    <p className="text-tertiary text-xs">{exp.period}</p>
-                    {exp.description && (
-                        <p className="text-secondary mt-2 whitespace-pre-line">{exp.description}</p>
-                    )}
+            {sorted.map((exp, idx) => (
+                <div key={idx} className="bg-surface rounded-apple p-4 sm:p-6 border border-separator shadow-apple-light">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                        {exp.logo && (
+                            <div className="flex-shrink-0">
+                                <Image
+                                    src={exp.logo}
+                                    alt={`${exp.company} logo`}
+                                    width={48}
+                                    height={48}
+                                    className="rounded-lg object-contain"
+                                    unoptimized
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                            </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-lg sm:text-xl font-semibold text-primary">{exp.title}</h4>
+                            <p className="text-accent font-medium text-sm sm:text-base">{exp.company}</p>
+                            <p className="text-tertiary text-xs sm:text-sm font-medium">{exp.period}</p>
+                            <div className="pt-2">
+                                {renderDescription(exp.description)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             ))}
         </div>
@@ -449,12 +511,9 @@ export const ProjectsModalContent = ({ projects }) => {
         return <p className="text-secondary">No projects available.</p>;
     }
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {projects.map((p) => (
-                <div key={p.id || p.title} className="bg-surface-secondary rounded-apple p-4 border border-separator">
-                    <h4 className="text-primary font-semibold">{p.title}</h4>
-                    <p className="text-secondary text-sm">{p.description}</p>
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.map((project) => (
+                <ProjectCard key={project.id || project.title} project={project} />
             ))}
         </div>
     );
