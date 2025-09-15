@@ -141,7 +141,7 @@ const HeroSections = () => {
                                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                 <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
                             </div>
-                            <div className="space-y-2 font-mono text-sm">
+                            <div className="space-y-2 font-mono text-sm text-left">
                                 <div className="text-accent">$ whoami</div>
                                 <div className="text-primary">{profile.name || "Ali Daho Bachir"}</div>
                                 <div className="text-accent">$ skills</div>
