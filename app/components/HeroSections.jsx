@@ -166,6 +166,20 @@ const HeroSections = () => {
         } catch {}
     }, [terminalLines]);
 
+    // Lock body scroll when mobile terminal is open to avoid layout bounce
+    useEffect(() => {
+        const body = document.body;
+        const prev = body.style.overflow;
+        if (showTerminal) {
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = prev || '';
+        }
+        return () => {
+            body.style.overflow = prev || '';
+        };
+    }, [showTerminal]);
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
@@ -259,7 +273,7 @@ const HeroSections = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="lg:hidden fixed inset-0 z-[9998]"
+                                className="lg:hidden fixed inset-0 z-[9998] h-[100svh] overscroll-contain"
                             >
                                 {/* Backdrop */}
                                 <div
@@ -272,19 +286,19 @@ const HeroSections = () => {
                                     animate={{ y: 0, scale: 1 }}
                                     exit={{ y: '100%', scale: 0.98 }}
                                     transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-                                    className="absolute bottom-0 left-0 right-0 mx-auto w-[92%] max-w-md rounded-2xl border border-surface-secondary/50 shadow-2xl overflow-hidden"
+                                    className="absolute bottom-0 left-0 right-0 mx-auto w-[86%] max-w-sm rounded-3xl border border-gray-200 dark:border-surface-secondary/50 shadow-2xl overflow-hidden will-change-transform"
                                 >
-                                    <div className="bg-surface-secondary/80 backdrop-blur-md p-4 border-b border-surface-secondary/50 flex items-center justify-between">
-                                        <span className="text-sm text-secondary font-mono">terminal</span>
+                                    <div className="bg-white/90 dark:bg-surface-secondary/80 backdrop-blur-md px-4 py-3 border-b border-gray-200 dark:border-surface-secondary/50 flex items-center justify-between">
+                                        <span className="text-sm text-gray-600 dark:text-secondary font-mono">terminal</span>
                                         <button
                                             onClick={() => setShowTerminal(false)}
-                                            className="text-secondary hover:text-primary px-2 py-1 rounded-md"
+                                            className="text-gray-500 dark:text-secondary hover:text-primary px-2 py-1 rounded-md"
                                             aria-label="Close terminal"
                                         >
                                             ✕
                                         </button>
                                     </div>
-                                    <div className="bg-surface/90 backdrop-blur-md p-4 max-h-[70vh] overflow-y-auto">
+                                    <div className="bg-white dark:bg-surface p-4 max-h-[70svh] overflow-y-auto">
                                         <Terminal
                                             profileData={profile}
                                             aboutData={about}
