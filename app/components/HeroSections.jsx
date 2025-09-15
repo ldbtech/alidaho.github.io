@@ -273,7 +273,7 @@ const HeroSections = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="lg:hidden fixed inset-0 z-[9998] h-[100svh] overscroll-contain"
+                                className="lg:hidden fixed inset-0 z-[9998] h-[100dvh] overscroll-contain"
                             >
                                 {/* Backdrop */}
                                 <div
@@ -298,7 +298,7 @@ const HeroSections = () => {
                                             ✕
                                         </button>
                                     </div>
-                                    <div className="bg-white dark:bg-surface p-4 max-h-[70svh] overflow-y-auto">
+                                    <div className="bg-white dark:bg-surface p-4 max-h-[65dvh] overflow-y-auto">
                                         <Terminal
                                             profileData={profile}
                                             aboutData={about}
