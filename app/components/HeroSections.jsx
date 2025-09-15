@@ -13,6 +13,7 @@ const HeroSections = () => {
     const [about, setAbout] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showTerminal, setShowTerminal] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -68,7 +69,7 @@ const HeroSections = () => {
     }
 
     return (
-        <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 pb-8 relative overflow-hidden">
+        <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 pb-8 relative overflow-hidden">
             {/* Modern Background Elements */}
             <div className="absolute inset-0 -z-10">
                 {/* Gradient Orbs */}
@@ -94,14 +95,64 @@ const HeroSections = () => {
                     className="text-center lg:text-left space-y-4 flex flex-col justify-center"
                 >
                     {/* Status Badge */}
+                    <motion.button
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        onClick={() => setShowTerminal(!showTerminal)}
+                        className="lg:hidden inline-flex items-center gap-2 px-4 py-2 bg-surface-secondary/50 backdrop-blur-sm rounded-full border border-surface-secondary/30 mb-0 hover:bg-surface-secondary/70 transition-colors cursor-pointer"
+                    >
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm text-secondary font-medium">Available for opportunities</span>
+                        <motion.div
+                            animate={{ rotate: showTerminal ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-secondary"
+                        >
+                            ▼
+                        </motion.div>
+                    </motion.button>
+                    
+                    {/* Desktop Status Badge */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-surface-secondary/50 backdrop-blur-sm rounded-full border border-surface-secondary/30 mb-0"
+                        className="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-surface-secondary/50 backdrop-blur-sm rounded-full border border-surface-secondary/30 mb-0"
                     >
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         <span className="text-sm text-secondary font-medium">Available for opportunities</span>
+                    </motion.div>
+
+                    {/* Mobile Terminal - Slides down when toggled */}
+                    <motion.div
+                        initial={false}
+                        animate={{ 
+                            height: showTerminal ? "auto" : 0,
+                            opacity: showTerminal ? 1 : 0
+                        }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className="lg:hidden overflow-hidden"
+                    >
+                        <div className="bg-surface-secondary/30 backdrop-blur-sm rounded-2xl p-6 border border-surface-secondary/50 shadow-2xl mx-4 mb-4">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
+                            </div>
+                            <div className="space-y-2 font-mono text-sm">
+                                <div className="text-accent">$ whoami</div>
+                                <div className="text-primary">{profile.name || "Ali Daho Bachir"}</div>
+                                <div className="text-accent">$ skills</div>
+                                <div className="text-secondary">→ Full Stack Development</div>
+                                <div className="text-secondary">→ AI & Machine Learning</div>
+                                <div className="text-secondary">→ Problem Solving</div>
+                                <div className="text-accent">$ languages</div>
+                                <div className="text-secondary">→ {about?.spokenLanguages?.map(lang => lang.language).join(', ') || 'Multiple'}</div>
+                                <div className="text-accent animate-pulse">█</div>
+                            </div>
+                        </div>
                     </motion.div>
 
                     {/* Name */}
@@ -193,7 +244,7 @@ const HeroSections = () => {
                     </motion.div>
                 </motion.div>
 
-                {/* Right Visual Element */}
+                {/* Right Visual Element - Desktop Terminal */}
                 <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
