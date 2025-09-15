@@ -104,13 +104,13 @@ const HeroSections = () => {
         }, [lines]);
 
         return (
-            <div className="font-mono text-sm text-left flex flex-col max-h-72 overflow-hidden">
-                <div className="space-y-1 overflow-y-auto pr-1" ref={scrollRef}>
+            <div className="font-mono text-sm text-left flex flex-col max-h-[60vh] sm:max-h-72 overflow-hidden">
+                <div className="space-y-1 overflow-y-auto pr-1 flex-1" ref={scrollRef}>
                     {lines.map((l, idx) => (
                         <div key={idx} className={l.type === 'in' ? 'text-accent' : 'text-secondary'}>{l.text}</div>
                     ))}
                 </div>
-                <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-2 shrink-0">
+                <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-2 shrink-0 sticky bottom-0 bg-surface/80 backdrop-blur supports-[padding:max(0px)]:pb-[env(safe-area-inset-bottom)]">
                     <span className="text-accent select-none">$</span>
                     <input
                         value={input}
