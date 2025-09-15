@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FaCode, FaServer, FaDatabase, FaTrophy, FaRobot } from "react-icons/fa";
+import { FaCode, FaServer, FaDatabase, FaTrophy, FaRobot, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { fetchData } from "../services/firebase";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -15,6 +15,61 @@ const defaultSkillGroups = [
   { title: 'Tools & Others', items: [] }
 ];
 
+// Collapsible Section Component
+const CollapsibleSection = ({ 
+  title, 
+  icon: Icon, 
+  children, 
+  isOpen, 
+  onToggle, 
+  count = null,
+  className = ""
+}) => (
+  <motion.div 
+    className={`bg-surface-secondary rounded-apple-lg overflow-hidden shadow-apple-light hover:shadow-apple transition-all duration-300 ${className}`}
+    initial={false}
+    animate={{ height: 'auto' }}
+  >
+    <button
+      onClick={onToggle}
+      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-tertiary transition-all duration-200 group"
+    >
+      <div className="flex items-center gap-3">
+        <Icon className="text-accent text-lg" />
+        <h3 className="text-lg font-semibold text-primary">{title}</h3>
+        {count !== null && (
+          <span className="bg-accent/10 text-accent text-xs px-2 py-1 rounded-apple">
+            {count}
+          </span>
+        )}
+      </div>
+      <motion.div
+        animate={{ rotate: isOpen ? 180 : 0 }}
+        transition={{ duration: 0.2 }}
+        className="text-secondary group-hover:text-primary transition-colors"
+      >
+        <FaChevronDown />
+      </motion.div>
+    </button>
+    
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="overflow-hidden"
+        >
+          <div className="px-6 pb-6 pt-2">
+            {children}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </motion.div>
+);
+
 const AboutSection = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("experience");
@@ -22,6 +77,24 @@ const AboutSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageError, setImageError] = useState(false);
+  
+  // Collapsible sections state
+  const [openSections, setOpenSections] = useState({
+    experience: true,
+    achievements: true,
+    education: true,
+    programmingLanguages: true,
+    skills: true,
+    aiTools: true
+  });
+
+  // Toggle section function
+  const toggleSection = (section) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   // Function to render description with bullet points
   const renderDescription = (description) => {
@@ -156,7 +229,7 @@ const AboutSection = () => {
   }
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 space-y-8 sm:space-y-12 lg:space-y-16" id="about">
+    <section className="pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-20 space-y-8 sm:space-y-12 lg:space-y-16" id="about">
       <div className="text-center space-y-4 sm:space-y-6 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -249,74 +322,97 @@ const AboutSection = () => {
               </div>
             )}
             {activeTab === "experience" && (
-              <div className="space-y-8">
-                {content.experience
-                  .sort((a, b) => {
-                    // Extract start date from period string with better parsing
-                    const getStartDate = (period) => {
-                      if (!period) return new Date(0);
-                      
-                      // Split by ' - ' and take the first part (start date)
-                      const startDateStr = period.split(' - ')[0].trim();
-                      
-                      // Handle different date formats
-                      // Format: "Month YYYY" (e.g., "March 2024")
-                      if (/^[A-Za-z]+ \d{4}$/.test(startDateStr)) {
+              <CollapsibleSection
+                title="Work Experience"
+                icon={FaServer}
+                isOpen={openSections.experience}
+                onToggle={() => toggleSection('experience')}
+                count={content.experience.length}
+              >
+                <div className="space-y-6">
+                  {content.experience
+                    .sort((a, b) => {
+                      // Extract start date from period string with better parsing
+                      const getStartDate = (period) => {
+                        if (!period) return new Date(0);
+                        
+                        // Split by ' - ' and take the first part (start date)
+                        const startDateStr = period.split(' - ')[0].trim();
+                        
+                        // Handle different date formats
+                        // Format: "Month YYYY" (e.g., "March 2024")
+                        if (/^[A-Za-z]+ \d{4}$/.test(startDateStr)) {
+                          return new Date(startDateStr);
+                        }
+                        
+                        // Format: "Month YYYY - Month YYYY" (e.g., "March 2024 - August 2024")
+                        if (startDateStr.includes(' ')) {
+                          return new Date(startDateStr);
+                        }
+                        
+                        // Fallback to original parsing
                         return new Date(startDateStr);
-                      }
+                      };
                       
-                      // Format: "Month YYYY - Month YYYY" (e.g., "March 2024 - August 2024")
-                      if (startDateStr.includes(' ')) {
-                        return new Date(startDateStr);
-                      }
+                      // Sort by start date (most recent first)
+                      const dateA = getStartDate(a.period);
+                      const dateB = getStartDate(b.period);
                       
-                      // Fallback to original parsing
-                      return new Date(startDateStr);
-                    };
-                    
-                    // Sort by start date (most recent first)
-                    const dateA = getStartDate(a.period);
-                    const dateB = getStartDate(b.period);
-                    
-                    // Handle invalid dates
-                    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
-                    if (isNaN(dateA.getTime())) return 1;
-                    if (isNaN(dateB.getTime())) return -1;
-                    
-                    return dateB - dateA;
-                  })
-                  .map((exp, index) => (
-                    <div key={index} className="bg-surface rounded-apple p-4 sm:p-6 shadow-apple-light">
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          {exp.logo && (
-                            <div className="flex-shrink-0">
-                              <Image
-                                src={exp.logo}
-                                alt={`${exp.company} logo`}
-                                width={40}
-                                height={40}
-                                className="rounded-lg object-contain sm:w-12 sm:h-12"
-                                unoptimized
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                }}
-                              />
+                      // Handle invalid dates
+                      if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                      if (isNaN(dateA.getTime())) return 1;
+                      if (isNaN(dateB.getTime())) return -1;
+                      
+                      return dateB - dateA;
+                    })
+                    .map((exp, index) => (
+                      <div key={index} className="bg-surface rounded-apple p-4 sm:p-6 shadow-apple-light">
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3 sm:gap-4">
+                            {exp.logo && (
+                              <div className="flex-shrink-0">
+                                <Image
+                                  src={exp.logo}
+                                  alt={`${exp.company} logo`}
+                                  width={40}
+                                  height={40}
+                                  className="rounded-lg object-contain sm:w-12 sm:h-12"
+                                  unoptimized
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary">{exp.title}</h3>
+                              <p className="text-accent font-medium text-base sm:text-lg">{exp.company}</p>
+                              <p className="text-tertiary text-xs sm:text-sm font-medium">{exp.period}</p>
                             </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary">{exp.title}</h3>
-                            <p className="text-accent font-medium text-base sm:text-lg">{exp.company}</p>
-                            <p className="text-tertiary text-xs sm:text-sm font-medium">{exp.period}</p>
+                          </div>
+                          <div className="pt-2">
+                            {renderDescription(exp.description)}
                           </div>
                         </div>
-                        <div className="pt-2">
-                          {renderDescription(exp.description)}
-                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
+                    ))}
+                  
+                  {content.experience.length === 0 && (
+                    <motion.div 
+                      className="text-center py-12"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <FaServer className="text-6xl text-tertiary mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-primary mb-2">{typeof t('about.noExperience', 'No Experience Yet') === 'string' ? t('about.noExperience', 'No Experience Yet') : 'No Experience Yet'}</h3>
+                      <p className="text-secondary">
+                        {typeof t('about.noExperienceDesc', 'Add your work experience in the admin panel to showcase your professional journey!') === 'string' ? t('about.noExperienceDesc', 'Add your work experience in the admin panel to showcase your professional journey!') : 'Add your work experience in the admin panel to showcase your professional journey!'}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              </CollapsibleSection>
             )}
             {activeTab === "education" && (
               <div className="space-y-12">
@@ -434,98 +530,106 @@ const AboutSection = () => {
               </div>
             )}
             {activeTab === "achievements" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {content.achievements.map((achievement, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-surface rounded-apple-lg p-6 shadow-apple-light hover:shadow-apple transition-apple group"
-                  >
-                    {/* Achievement Image */}
-                    {achievement.image && (
-                      <div className="relative w-full h-48 mb-4 rounded-apple overflow-hidden">
-                        <Image
-                          src={achievement.image}
-                          alt={achievement.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-apple"
-                          unoptimized
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Achievement Content */}
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <FaTrophy className="text-accent text-lg" />
-                        <h3 className="text-xl font-semibold text-primary">{achievement.title}</h3>
-                      </div>
-                      
-                      {achievement.category && (
-                        <span className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-apple text-sm font-medium">
-                          {achievement.category}
-                        </span>
-                      )}
-                      
-                      {achievement.date && (
-                        <p className="text-secondary text-sm">
-                          {achievement.date}
-                        </p>
-                      )}
-                      
-                      {achievement.description && (
-                        <p className="text-secondary text-sm leading-relaxed">
-                          {achievement.description}
-                        </p>
-                      )}
-                      
-                      {achievement.organization && (
-                        <p className="text-tertiary text-sm">
-                          <span className="font-medium">Organization:</span> {achievement.organization}
-                        </p>
-                      )}
-                      
-                      {achievement.position && (
-                        <p className="text-tertiary text-sm">
-                          <span className="font-medium">Position:</span> {achievement.position}
-                        </p>
-                      )}
-                      
-                      {achievement.location && (
-                        <p className="text-tertiary text-sm">
-                          <span className="font-medium">Location:</span> {achievement.location}
-                        </p>
-                      )}
-                      
-                      {achievement.link && (
-                        <div className="pt-2">
-                          <a
-                            href={achievement.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-apple text-sm font-medium transition-apple"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            View Details
-                          </a>
+              <CollapsibleSection
+                title="Extracurricular and Achievement"
+                icon={FaTrophy}
+                isOpen={openSections.achievements}
+                onToggle={() => toggleSection('achievements')}
+                count={content.achievements.length}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {content.achievements.map((achievement, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-surface rounded-apple-lg p-6 shadow-apple-light hover:shadow-apple transition-apple group"
+                    >
+                      {/* Achievement Image */}
+                      {achievement.image && (
+                        <div className="relative w-full h-48 mb-4 rounded-apple overflow-hidden">
+                          <Image
+                            src={achievement.image}
+                            alt={achievement.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-apple"
+                            unoptimized
+                          />
                         </div>
                       )}
+                      
+                      {/* Achievement Content */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <FaTrophy className="text-accent text-lg" />
+                          <h3 className="text-xl font-semibold text-primary">{achievement.title}</h3>
+                        </div>
+                        
+                        {achievement.category && (
+                          <span className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-apple text-sm font-medium">
+                            {achievement.category}
+                          </span>
+                        )}
+                        
+                        {achievement.date && (
+                          <p className="text-secondary text-sm">
+                            {achievement.date}
+                          </p>
+                        )}
+                        
+                        {achievement.description && (
+                          <p className="text-secondary text-sm leading-relaxed">
+                            {achievement.description}
+                          </p>
+                        )}
+                        
+                        {achievement.organization && (
+                          <p className="text-tertiary text-sm">
+                            <span className="font-medium">Organization:</span> {achievement.organization}
+                          </p>
+                        )}
+                        
+                        {achievement.position && (
+                          <p className="text-tertiary text-sm">
+                            <span className="font-medium">Position:</span> {achievement.position}
+                          </p>
+                        )}
+                        
+                        {achievement.location && (
+                          <p className="text-tertiary text-sm">
+                            <span className="font-medium">Location:</span> {achievement.location}
+                          </p>
+                        )}
+                        
+                        {achievement.link && (
+                          <div className="pt-2">
+                            <a
+                              href={achievement.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-apple text-sm font-medium transition-apple"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              View Details
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                  
+                  {content.achievements.length === 0 && (
+                    <div className="col-span-full text-center py-12">
+                      <FaTrophy className="text-6xl text-tertiary mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-primary mb-2">{typeof t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') === 'string' ? t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') : 'No Extracurricular and Achievement Yet'}</h3>
+                      <p className="text-secondary">{typeof t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') === 'string' ? t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') : 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!'}</p>
                     </div>
-                  </motion.div>
-                ))}
-                
-                {content.achievements.length === 0 && (
-                  <div className="col-span-full text-center py-12">
-                    <FaTrophy className="text-6xl text-tertiary mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-primary mb-2">{typeof t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') === 'string' ? t('about.noExtracurricularAndAchievement', 'No Extracurricular and Achievement Yet') : 'No Extracurricular and Achievement Yet'}</h3>
-                    <p className="text-secondary">{typeof t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') === 'string' ? t('about.noExtracurricularAndAchievementDesc', 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!') : 'Add your extracurricular activities and achievements in the admin panel to showcase your accomplishments!'}</p>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </CollapsibleSection>
             )}
             {activeTab === "programmingLanguages" && (
               <div className="flex flex-wrap gap-3">
