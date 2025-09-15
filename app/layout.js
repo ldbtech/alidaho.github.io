@@ -3,12 +3,18 @@ import './globals.css';
 import Script from 'next/script';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import DynamicFavicon from './components/DynamicFavicon';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Ali Daho - Portfolio',
   description: 'Software Engineer Portfolio',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -32,6 +38,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body className={inter.className}>
+        <DynamicFavicon />
         <ThemeProvider>
           <LanguageProvider>
             {children}
