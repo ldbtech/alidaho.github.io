@@ -2,11 +2,11 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-const NavLink = ({ href, title }) => {
+const NavLink = ({ href, title, onClick, className }) => {
     return (
-        <Link href={href}>
+        <Link href={href} onClick={onClick}>
             <motion.span
-                className="relative text-secondary hover:text-primary font-medium transition-apple group"
+                className={`relative text-secondary hover:text-primary font-medium transition-apple group ${className || ''}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
             >

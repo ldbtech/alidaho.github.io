@@ -73,9 +73,9 @@ const Navbar = () => {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-apple ${
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
                 scrolled 
-                    ? "bg-background/80 backdrop-blur-xl border-b border-separator" 
+                    ? "bg-[#121212]/90 backdrop-blur-xl border-b border-gray-800 shadow-lg" 
                     : "bg-transparent"
             }`}
         >
@@ -86,7 +86,7 @@ const Navbar = () => {
                         className="flex items-center group"
                     >
                         {profile?.logo && !imageError ? (
-                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-apple overflow-hidden group-hover:scale-105 transition-apple">
+                            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden group-hover:scale-105 transition-all duration-300">
                                 <Image
                                     src={profile.logo}
                                     alt="Logo"
@@ -98,28 +98,29 @@ const Navbar = () => {
                                 />
                             </div>
                         ) : (
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-apple bg-gradient-theme flex items-center justify-center group-hover:scale-105 transition-apple">
-                                <span className="text-sm sm:text-lg font-semibold text-white">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-lg">
+                                <span className="text-lg sm:text-xl font-bold text-white">
                                     AD
                                 </span>
                             </div>
                         )}
                     </Link>
+                    
                     {/* Mobile Menu Button */}
                     <div className="lg:hidden">
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setNavbarOpen(true)}
-                            className="p-2 rounded-apple bg-surface-secondary hover:bg-surface-tertiary transition-apple"
+                            className="p-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 backdrop-blur-sm border border-gray-700 transition-all duration-300"
                         >
-                            <Bars3Icon className="h-5 w-5 text-primary" />
+                            <Bars3Icon className="h-6 w-6 text-white" />
                         </motion.button>
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-                        <ul className="flex items-center space-x-4 xl:space-x-8">
+                    <div className="hidden lg:flex items-center space-x-8">
+                        <ul className="flex items-center space-x-6">
                             {navLinks.map((link, index) => (
                                 <motion.li 
                                     key={index}
@@ -131,7 +132,7 @@ const Navbar = () => {
                                 </motion.li>
                             ))}
                         </ul>
-                        <div className="flex items-center gap-2 xl:gap-3">
+                        <div className="flex items-center gap-3 pl-6 border-l border-gray-700">
                             <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -151,12 +152,14 @@ const Navbar = () => {
 
                     {/* Tablet Navigation - Show controls but hide nav links */}
                     <div className="hidden md:flex lg:hidden items-center gap-3">
-                        <LanguageSwitcher />
-                        <ThemeToggle />
+                        <div className="flex items-center gap-3">
+                            <LanguageSwitcher />
+                            <ThemeToggle />
+                        </div>
                     </div>
                 </div>
             </div>
-            {navbarOpen ? <MenuOverlay links={navLinks} /> : null}
+            {navbarOpen && <MenuOverlay links={navLinks} onClose={() => setNavbarOpen(false)} />}
         </motion.nav>
     );
 };
