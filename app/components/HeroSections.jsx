@@ -167,16 +167,31 @@ const HeroSections = () => {
     }, [terminalLines]);
 
     // Lock body scroll when mobile terminal is open to avoid layout bounce
+    // Lock page scroll when terminal is open (mobile) and allow only drawer to scroll
+    const drawerRef = useRef(null);
     useEffect(() => {
         const body = document.body;
-        const prev = body.style.overflow;
+        const html = document.documentElement;
+        const prevBody = body.style.overflow;
+        const prevHtml = html.style.overflow;
+        const preventScroll = (e) => {
+            const target = e.target;
+            if (drawerRef.current && drawerRef.current.contains(target)) {
+                return; // allow scrolling inside drawer
+            }
+            e.preventDefault();
+        };
         if (showTerminal) {
             body.style.overflow = 'hidden';
-        } else {
-            body.style.overflow = prev || '';
+            html.style.overflow = 'hidden';
+            document.addEventListener('touchmove', preventScroll, { passive: false });
+            document.addEventListener('wheel', preventScroll, { passive: false });
         }
         return () => {
-            body.style.overflow = prev || '';
+            body.style.overflow = prevBody || '';
+            html.style.overflow = prevHtml || '';
+            document.removeEventListener('touchmove', preventScroll);
+            document.removeEventListener('wheel', preventScroll);
         };
     }, [showTerminal]);
 
@@ -286,19 +301,31 @@ const HeroSections = () => {
                                     animate={{ y: 0, scale: 1 }}
                                     exit={{ y: '100%', scale: 0.98 }}
                                     transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-                                    className="absolute bottom-0 left-0 right-0 mx-auto w-[86%] max-w-sm rounded-3xl border border-gray-200 dark:border-surface-secondary/50 shadow-2xl overflow-hidden will-change-transform"
+                                    className="absolute left-0 right-0 mx-auto bottom-6 sm:bottom-8 w-[86%] max-w-sm rounded-3xl border border-gray-200 dark:border-surface-secondary/50 shadow-2xl overflow-hidden will-change-transform"
+                                    ref={drawerRef}
                                 >
-                                    <div className="bg-white/90 dark:bg-surface-secondary/80 backdrop-blur-md px-4 py-3 border-b border-gray-200 dark:border-surface-secondary/50 flex items-center justify-between">
-                                        <span className="text-sm text-gray-600 dark:text-secondary font-mono">terminal</span>
-                                        <button
-                                            onClick={() => setShowTerminal(false)}
-                                            className="text-gray-500 dark:text-secondary hover:text-primary px-2 py-1 rounded-md"
-                                            aria-label="Close terminal"
-                                        >
-                                            ✕
-                                        </button>
+                                    <div className="bg-surface-secondary/80 backdrop-blur-md px-4 py-3 border-b border-separator flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setShowTerminal(false)}
+                                                aria-label="Close"
+                                                className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors"
+                                            />
+                                            <button
+                                                onClick={() => setTerminalLines(prev => [...prev, { type: 'out', text: 'Welcome to Ali Portfolio' }])}
+                                                aria-label="Message"
+                                                className="w-3 h-3 rounded-full bg-amber-400 hover:bg-amber-500 active:bg-amber-600 transition-colors"
+                                            />
+                                            <button
+                                                onClick={() => setShowTerminal(false)}
+                                                aria-label="Minimize"
+                                                className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors"
+                                            />
+                                        </div>
+                                        <span className="text-sm text-secondary font-mono">terminal</span>
+                                        <div className="w-6" />
                                     </div>
-                                    <div className="bg-white dark:bg-surface p-4 max-h-[65dvh] overflow-y-auto">
+                                    <div className="bg-surface p-4 max-h-[65dvh] overflow-y-auto">
                                         <Terminal
                                             profileData={profile}
                                             aboutData={about}
