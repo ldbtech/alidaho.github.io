@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from "next/image";
 import { TypeAnimation } from "react-type-animation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { fetchProfile, fetchData } from '../services/firebase';
@@ -19,14 +19,23 @@ const HeroSections = () => {
     const [showExperienceModal, setShowExperienceModal] = useState(false);
     const [showProjectsModal, setShowProjectsModal] = useState(false);
     const [projects, setProjects] = useState([]);
-
-    // Simple interactive terminal component
-    const Terminal = ({ profileData, aboutData, onShowExperience, onShowProjects }) => {
-        const [input, setInput] = useState("");
-        const [lines, setLines] = useState([
+    // Terminal persistence
+    const [terminalLines, setTerminalLines] = useState(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const saved = localStorage.getItem('terminal_lines');
+                if (saved) return JSON.parse(saved);
+            } catch {}
+        }
+        return [
             { type: "out", text: "terminal" },
             { type: "prompt", text: "$ type 'help' to get started" },
-        ]);
+        ];
+    });
+    const [terminalInput, setTerminalInput] = useState("");
+
+    // Simple interactive terminal component
+    const Terminal = ({ profileData, aboutData, onShowExperience, onShowProjects, lines, setLines, input, setInput }) => {
         const scrollRef = useRef(null);
 
         const appendLine = (newLine) => setLines((prev) => [...prev, newLine]);
@@ -109,6 +118,10 @@ const HeroSections = () => {
                         className="flex-1 bg-transparent border-b border-separator focus:outline-none focus:border-accent text-primary placeholder:text-tertiary"
                         placeholder="Type a command... (help)"
                         aria-label="terminal input"
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck={false}
+                        autoFocus
                     />
                 </form>
             </div>
@@ -145,6 +158,13 @@ const HeroSections = () => {
 
         loadData();
     }, []);
+
+    // Persist terminal lines
+    useEffect(() => {
+        try {
+            localStorage.setItem('terminal_lines', JSON.stringify(terminalLines));
+        } catch {}
+    }, [terminalLines]);
 
     if (loading) {
         return (
@@ -232,31 +252,54 @@ const HeroSections = () => {
                         <span className="text-sm text-secondary font-medium">Available for opportunities</span>
                     </motion.div>
 
-                    {/* Mobile Terminal - Slides down when toggled */}
-                    <motion.div
-                        initial={false}
-                        animate={{ 
-                            height: showTerminal ? "auto" : 0,
-                            opacity: showTerminal ? 1 : 0
-                        }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="lg:hidden overflow-hidden"
-                    >
-                        <div className="bg-surface-secondary/30 backdrop-blur-sm rounded-2xl p-6 border border-surface-secondary/50 shadow-2xl mx-4 mb-4">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
-                            </div>
-                            <Terminal
-                                profileData={profile}
-                                aboutData={about}
-                                onShowExperience={() => setShowExperienceModal(true)}
-                                onShowProjects={() => setShowProjectsModal(true)}
-                            />
-                        </div>
-                    </motion.div>
+                    {/* Mobile Terminal - Full-screen drawer */}
+                    <AnimatePresence>
+                        {showTerminal && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="lg:hidden fixed inset-0 z-[9998]"
+                            >
+                                {/* Backdrop */}
+                                <div
+                                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                                    onClick={() => setShowTerminal(false)}
+                                ></div>
+                                {/* Drawer */}
+                                <motion.div
+                                    initial={{ y: '100%', scale: 0.98 }}
+                                    animate={{ y: 0, scale: 1 }}
+                                    exit={{ y: '100%', scale: 0.98 }}
+                                    transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+                                    className="absolute bottom-0 left-0 right-0 mx-auto w-[92%] max-w-md rounded-2xl border border-surface-secondary/50 shadow-2xl overflow-hidden"
+                                >
+                                    <div className="bg-surface-secondary/80 backdrop-blur-md p-4 border-b border-surface-secondary/50 flex items-center justify-between">
+                                        <span className="text-sm text-secondary font-mono">terminal</span>
+                                        <button
+                                            onClick={() => setShowTerminal(false)}
+                                            className="text-secondary hover:text-primary px-2 py-1 rounded-md"
+                                            aria-label="Close terminal"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                    <div className="bg-surface/90 backdrop-blur-md p-4 max-h-[70vh] overflow-y-auto">
+                                        <Terminal
+                                            profileData={profile}
+                                            aboutData={about}
+                                            onShowExperience={() => setShowExperienceModal(true)}
+                                            onShowProjects={() => setShowProjectsModal(true)}
+                                            lines={terminalLines}
+                                            setLines={setTerminalLines}
+                                            input={terminalInput}
+                                            setInput={setTerminalInput}
+                                        />
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Name */}
                     <motion.h1
@@ -367,6 +410,10 @@ const HeroSections = () => {
                             aboutData={about}
                             onShowExperience={() => setShowExperienceModal(true)}
                             onShowProjects={() => setShowProjectsModal(true)}
+                            lines={terminalLines}
+                            setLines={setTerminalLines}
+                            input={terminalInput}
+                            setInput={setTerminalInput}
                         />
                     </div>
 
