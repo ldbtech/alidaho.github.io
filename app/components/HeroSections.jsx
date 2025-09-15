@@ -7,6 +7,7 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { fetchProfile, fetchData } from '../services/firebase';
 import ResumePreview from './ResumePreview';
+import Modal from './Modal';
 
 const HeroSections = () => {
     const [profile, setProfile] = useState(null);
@@ -14,9 +15,11 @@ const HeroSections = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showTerminal, setShowTerminal] = useState(false);
+    const [showExperienceModal, setShowExperienceModal] = useState(false);
+    const [showProjectsModal, setShowProjectsModal] = useState(false);
 
     // Simple interactive terminal component
-    const Terminal = ({ profileData, aboutData }) => {
+    const Terminal = ({ profileData, aboutData, onShowExperience, onShowProjects }) => {
         const [input, setInput] = useState("");
         const [lines, setLines] = useState([
             { type: "out", text: "terminal" },
@@ -35,6 +38,8 @@ const HeroSections = () => {
                     "skills - List core skills",
                     "languages - List spoken languages",
                     "socials - Show social links",
+                    "show experience - Open experience modal",
+                    "show projects - Open projects modal",
                     "clear - Clear the terminal",
                 ];
             },
@@ -55,8 +60,23 @@ const HeroSections = () => {
             const cmd = input.trim();
             if (!cmd) return;
             appendLine({ type: "in", text: `$ ${cmd}` });
-            const [base] = cmd.split(/\s+/);
-            const handler = commands[base?.toLowerCase()];
+            const parts = cmd.split(/\s+/);
+            const base = parts[0]?.toLowerCase();
+            // Handle compound commands like "show projects"
+            if (base === 'show') {
+                const target = parts[1]?.toLowerCase();
+                if (target === 'experience' && typeof onShowExperience === 'function') {
+                    onShowExperience();
+                    setInput("");
+                    return;
+                }
+                if (target === 'projects' && typeof onShowProjects === 'function') {
+                    onShowProjects();
+                    setInput("");
+                    return;
+                }
+            }
+            const handler = commands[base];
             if (handler) {
                 const result = handler();
                 result.forEach((t) => t && appendLine({ type: "out", text: t }));
@@ -219,7 +239,12 @@ const HeroSections = () => {
                                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                 <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
                             </div>
-                            <Terminal profileData={profile} aboutData={about} />
+                            <Terminal
+                                profileData={profile}
+                                aboutData={about}
+                                onShowExperience={() => setShowExperienceModal(true)}
+                                onShowProjects={() => setShowProjectsModal(true)}
+                            />
                         </div>
                     </motion.div>
 
@@ -327,7 +352,12 @@ const HeroSections = () => {
                             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                             <span className="ml-4 text-sm text-secondary font-mono">terminal</span>
                         </div>
-                        <Terminal profileData={profile} aboutData={about} />
+                        <Terminal
+                            profileData={profile}
+                            aboutData={about}
+                            onShowExperience={() => setShowExperienceModal(true)}
+                            onShowProjects={() => setShowProjectsModal(true)}
+                        />
                     </div>
 
                     {/* Floating Elements */}
@@ -364,8 +394,72 @@ const HeroSections = () => {
                     ></motion.div>
                 </motion.div>
             </motion.div>
+
+            {/* Experience Modal */}
+            <Modal
+                isOpen={showExperienceModal}
+                onClose={() => setShowExperienceModal(false)}
+                title="Work Experience"
+                maxWidth="max-w-4xl"
+            >
+                <ExperienceModalContent about={about} />
+            </Modal>
+
+            {/* Projects Modal */}
+            <Modal
+                isOpen={showProjectsModal}
+                onClose={() => setShowProjectsModal(false)}
+                title="Projects"
+                maxWidth="max-w-5xl"
+            >
+                {/* Reuse projects from Firebase if available in about or load separately later */}
+                <ProjectsPlaceholder />
+            </Modal>
         </section>
     );
 };
 
 export default HeroSections;
+
+// Modals
+// Experience Modal
+/** Rendered below to keep file self-contained */
+export const ExperienceModalContent = ({ about }) => {
+    if (!about?.experience || about.experience.length === 0) {
+        return <p className="text-secondary">No experience added yet.</p>;
+    }
+    return (
+        <div className="space-y-4">
+            {about.experience.map((exp, idx) => (
+                <div key={idx} className="bg-surface-secondary rounded-apple p-4 border border-separator">
+                    <h4 className="text-primary font-semibold">{exp.title}</h4>
+                    <p className="text-accent text-sm">{exp.company}</p>
+                    <p className="text-tertiary text-xs">{exp.period}</p>
+                    {exp.description && (
+                        <p className="text-secondary mt-2 whitespace-pre-line">{exp.description}</p>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export const ProjectsModalContent = ({ projects }) => {
+    if (!projects || projects.length === 0) {
+        return <p className="text-secondary">No projects available.</p>;
+    }
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {projects.map((p) => (
+                <div key={p.id || p.title} className="bg-surface-secondary rounded-apple p-4 border border-separator">
+                    <h4 className="text-primary font-semibold">{p.title}</h4>
+                    <p className="text-secondary text-sm">{p.description}</p>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const ProjectsPlaceholder = () => (
+    <p className="text-secondary">Coming soon: Projects list in modal.</p>
+);
